@@ -5,6 +5,7 @@ const userProfileRoutes = require('./routes/userProfileRoutes');
 const timeRoutes = require('./routes/timeRoutes');
 const lapRoutes = require('./routes/lapRoutes');
 const runnerRoutes = require('./routes/runnerRoutes');
+const teamRoutes = require('./routes/teamRoutes');
 
 // Crear la app de Express
 const app = express();
@@ -19,5 +20,6 @@ app.use('/times', timeRoutes);
 app.use('/laps', lapRoutes);
 app.use('/profile', userProfileRoutes);
 app.use('/runners', runnerRoutes);
+app.use('/teams', teamRoutes);
 
 module.exports = app;
