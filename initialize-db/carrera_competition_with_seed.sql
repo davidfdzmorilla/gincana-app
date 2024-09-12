@@ -47,8 +47,4 @@ CREATE TABLE IF NOT EXISTS times (
 -- Datos de prueba para Usuarios (un admin y dos corredores)
 INSERT INTO users (nombre, email, telefono, foto_perfil, password, rol) VALUES
 ('Admin User', 'admin@carrera.com', '123456789', 'admin.jpg', 'admin123456', 'admin')
-
--- Datos de prueba para Equipos
-INSERT INTO teams (nombre, descripcion) VALUES
-('Equipo A', 'Descripción del equipo A'),
-('Equipo B', 'Descripción del equipo B');
+;
