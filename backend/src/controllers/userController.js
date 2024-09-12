@@ -1,10 +1,11 @@
-// src/controllers/userController.js
 const bcrypt = require('bcryptjs');
-const db = require('../config/db'); // Asegúrate de importar correctamente
+const db = require('../config/db');
+const { registrarAuditoria } = require('../utils/auditLogger');
 
 // Controlador para añadir un usuario
 const agregarUsuario = async (req, res) => {
   const { nombre, email, telefono, password, rol, edad, nombre_equipo, foto_perfil } = req.body;
+  const adminUserId = req.user.id; // Obtener el ID del usuario autenticado
 
   // Verificar si el usuario ya existe
   db.query('SELECT * FROM users WHERE email = ?', [email], async (err, result) => {
@@ -41,6 +42,9 @@ const agregarUsuario = async (req, res) => {
 
           const userId = result.insertId; // Obtener el ID del nuevo usuario
 
+          // Registrar evento de auditoría
+          registrarAuditoria(adminUserId, 'CREATE', 'users', userId);
+
           // Insertar el corredor (runner) asociado en la tabla `runners`
           db.query(
             'INSERT INTO runners (user_id, edad, equipo_id) VALUES (?, ?, ?)',
@@ -69,6 +73,10 @@ const eliminarUsuario = (req, res) => {
     // Eliminar el usuario y todos los datos relacionados
     db.query('DELETE FROM users WHERE id = ?', [id], (err, result) => {
       if (err) return res.status(500).json({ message: 'Error al eliminar el usuario.' });
+      
+      // Registrar evento de auditoría
+      registrarAuditoria(req.user.id, 'DELETE', 'users', id);
+
       res.status(200).json({ message: 'Usuario y sus datos eliminados exitosamente.' });
     });
   });

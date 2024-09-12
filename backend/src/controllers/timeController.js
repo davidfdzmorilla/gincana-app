@@ -1,8 +1,10 @@
-const db = require('../config/db'); // Importa la conexión de la base de datos
+const db = require('../config/db');
+const { registrarAuditoria } = require('../utils/auditLogger');
 
 // Controlador para registrar el tiempo de un corredor
 const registrarTiempo = (req, res) => {
   const { runner_id, vuelta, tiempo } = req.body;
+  const adminUserId = req.user.id; // Obtener el ID del usuario autenticado
 
   // Verificar si el corredor existe
   db.query('SELECT * FROM runners WHERE id = ?', [runner_id], (err, result) => {
@@ -21,6 +23,10 @@ const registrarTiempo = (req, res) => {
       // Si no existe una vuelta duplicada, registramos la nueva vuelta
       db.query('INSERT INTO times (runner_id, vuelta, tiempo) VALUES (?, ?, ?)', [runner_id, vuelta, tiempo], (err, result) => {
         if (err) return res.status(500).json({ message: 'Error al registrar el tiempo.' });
+
+        // Registrar evento de auditoría
+        registrarAuditoria(adminUserId, 'CREATE', 'times', result.insertId);
+
         res.status(201).json({ message: 'Tiempo registrado exitosamente.', id: result.insertId });
       });
     });
@@ -39,6 +45,10 @@ const borrarTiempo = (req, res) => {
     // Borrar el tiempo
     db.query('DELETE FROM times WHERE id = ?', [id], (err, result) => {
       if (err) return res.status(500).json({ message: 'Error al borrar el tiempo.' });
+
+      // Registrar evento de auditoría
+      registrarAuditoria(adminUserId, 'DELETE', 'times', id);
+
       res.status(200).json({ message: 'Tiempo borrado exitosamente.' });
     });
   });

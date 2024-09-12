@@ -1,4 +1,5 @@
 const db = require('../config/db');
+const { registrarAuditoria } = require('../utils/auditLogger');
 
 // Obtener todos los equipos
 const obtenerEquipos = (req, res) => {
@@ -18,8 +19,7 @@ const obtenerEquipos = (req, res) => {
 // Crear un nuevo equipo
 const crearEquipo = (req, res) => {
   const { nombre_equipo, foto_perfil } = req.body;
-
-  console.log(req.body);
+  const adminUserId = req.user.id; // Obtener el ID del usuario autenticado
 
   // Verificar si ya existe un equipo con ese nombre
   db.query('SELECT * FROM teams WHERE nombre = ?', [nombre_equipo], (err, result) => {
@@ -32,6 +32,9 @@ const crearEquipo = (req, res) => {
     // Insertar el nuevo equipo en la tabla `equipos`
     db.query('INSERT INTO teams (nombre, foto_perfil) VALUES (?, ?)', [nombre_equipo, foto_perfil], (err, result) => {
       if (err) return res.status(500).json({ message: 'Error al crear el equipo.' });
+
+      // Registrar evento de auditoría
+      registrarAuditoria(adminUserId, 'CREATE', 'teams', result.insertId);
 
       res.status(201).json({ message: 'Equipo creado exitosamente.', equipo_id: result.insertId });
     });
@@ -46,6 +49,9 @@ const seleccionarEquipo = (req, res) => {
   // Actualizar el equipo del corredor en la tabla runners
   db.query('UPDATE runners SET equipo_id = ? WHERE user_id = ?', [equipo_id, userId], (err, result) => {
     if (err) return res.status(500).json({ message: 'Error al seleccionar el equipo.' });
+
+    // Registrar evento de auditoría
+    registrarAuditoria(userId, 'UPDATE', 'runners', userId);
 
     res.status(200).json({ message: 'Equipo seleccionado exitosamente.' });
   });
