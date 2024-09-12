@@ -31,4 +31,25 @@ const verificarAdmin = (req, res, next) => {
   }
 };
 
-module.exports = { verificarAdmin };
+const verificarToken = (req, res, next) => {
+  const authHeader = req.header('Authorization');
+  
+  if (!authHeader) {
+    return res.status(401).json({ message: 'Acceso denegado. No se proporcionó un token.' });
+  }
+
+  const token = authHeader.split(' ')[1];
+  if (!token) {
+    return res.status(401).json({ message: 'Formato de token inválido.' });
+  }
+
+  try {
+    const verified = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = verified; // Guardar la información del usuario autenticado
+    next();
+  } catch (err) {
+    res.status(400).json({ message: 'Token no válido.' });
+  }
+};
+
+module.exports = { verificarAdmin, verificarToken };
