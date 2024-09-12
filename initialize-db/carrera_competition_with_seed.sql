@@ -46,23 +46,9 @@ CREATE TABLE IF NOT EXISTS times (
 
 -- Datos de prueba para Usuarios (un admin y dos corredores)
 INSERT INTO users (nombre, email, telefono, foto_perfil, password, rol) VALUES
-('Admin User', 'admin@carrera.com', '123456789', 'admin.jpg', 'admin123456', 'admin'),
-('Corredor 1', 'corredor1@carrera.com', '987654321', 'corredor1.jpg', 'corredor1123456', 'corredor'),
-('Corredor 2', 'corredor2@carrera.com', '555555555', 'corredor2.jpg', 'corredor2123456', 'corredor');
+('Admin User', 'admin@carrera.com', '123456789', 'admin.jpg', 'admin123456', 'admin')
 
 -- Datos de prueba para Equipos
 INSERT INTO teams (nombre, descripcion) VALUES
 ('Equipo A', 'Descripción del equipo A'),
 ('Equipo B', 'Descripción del equipo B');
-
--- Datos de prueba para Corredores (asociados a los usuarios y equipos)
-INSERT INTO runners (user_id, edad, equipo_id, ranking) VALUES
-(2, 25, 1, 1), -- Corredor 1 en el Equipo A
-(3, 30, 2, 2); -- Corredor 2 en el Equipo B
-
--- Datos de prueba para Tiempos (tiempos para los corredores)
-INSERT INTO times (runner_id, vuelta, tiempo) VALUES
-(1, 1, 360.5), -- Corredor 1, vuelta 1
-(1, 2, 355.0), -- Corredor 1, vuelta 2
-(2, 1, 400.2), -- Corredor 2, vuelta 1
-(2, 2, 390.3); -- Corredor 2, vuelta 2
