@@ -15,7 +15,7 @@ const registrarTiempo = (req, res) => {
       [runner_id, vuelta, tiempo],
       (err, result) => {
         if (err) return res.status(500).json({ message: 'Error al registrar el tiempo.' });
-        res.status(201).json({ message: 'Tiempo registrado exitosamente.' });
+        res.status(201).json({ message: 'Tiempo registrado exitosamente.', id: result.insertId });
       }
     );
   });

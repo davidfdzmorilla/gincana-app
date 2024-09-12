@@ -21,7 +21,7 @@ const agregarUsuario = async (req, res) => {
       [nombre, email, telefono, hashedPassword, rol],
       (err, result) => {
         if (err) return res.status(500).json({ message: 'Error en la base de datos.' });
-        res.status(201).json({ message: 'Usuario agregado exitosamente.' });
+        res.status(201).json({ message: 'Usuario agregado exitosamente.', id: result.insertId });
       }
     );
   });

@@ -22,7 +22,7 @@ const login = (req, res) => {
         expiresIn: '1h',
       });
 
-      res.json({ token });
+      res.json({ user: { id: user.id, nombre: user.nombre, email: user.email, rol: user.rol }, token });
     });
   });
 };
