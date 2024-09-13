@@ -5,7 +5,7 @@ const initSocket = (server) => {
   const socketIo = require('socket.io');
   io = socketIo(server, {
     cors: {
-      origin: 'http://127.0.0.1:5500',
+      origin: 'http://localhost:3000',
       methods: ['GET', 'POST', 'PUT', 'DELETE'],
       // credentials: true
     }
