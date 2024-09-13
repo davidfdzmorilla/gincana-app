@@ -44,6 +44,16 @@ CREATE TABLE IF NOT EXISTS times (
   FOREIGN KEY (runner_id) REFERENCES runners(id) ON DELETE CASCADE
 );
 
+-- Tabla de Logs de Auditoría
+CREATE TABLE audit_logs (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT,
+  action VARCHAR(255),
+  entity VARCHAR(255),
+  entity_id INT,
+  timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Datos de prueba para Usuarios (un admin y dos corredores)
 INSERT INTO users (nombre, email, telefono, foto_perfil, password, rol) VALUES
 ('Admin User', 'admin@carrera.com', '123456789', 'admin.jpg', 'admin123456', 'admin')

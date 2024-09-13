@@ -42,3 +42,13 @@ CREATE TABLE times (
   fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (runner_id) REFERENCES runners(id) ON DELETE CASCADE
 );
+
+-- Tabla de Logs de Auditoría
+CREATE TABLE audit_logs (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT,
+  action VARCHAR(255),
+  entity VARCHAR(255),
+  entity_id INT,
+  timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

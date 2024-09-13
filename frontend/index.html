@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Prueba de Socket.IO</title>
+    <script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script>
+  </head>
+  <body>
+    <h1>Prueba de Socket.IO</h1>
+    <div id="tiempos"></div>
+
+    <script>
+      const socket = io("http://localhost:3000"); // Asegúrate de que la URL es correcta
+
+      // Mostrar mensaje si la conexión es exitosa
+      socket.on("connect", () => {
+        console.log("Conectado al servidor WebSocket");
+      });
+
+      // Escuchar las actualizaciones de tiempos en tiempo real
+      socket.on("actualizacionTiempos", (data) => {
+        console.log("Tiempos actualizados:", data); // Debería mostrar los datos en la consola
+
+        // Mostrar los datos en la página
+        const tiemposDiv = document.getElementById("tiempos");
+        tiemposDiv.innerHTML = `Corredor ID: ${data.runner_id}, Vuelta: ${data.vuelta}, Tiempo: ${data.tiempo}`;
+      });
+    </script>
+  </body>
+</html>
