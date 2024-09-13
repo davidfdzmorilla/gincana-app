@@ -1,14 +1,14 @@
 const http = require('http');
 const app = require('./src/app');
-const { initSocket } = require('./src/utils/socket'); // Usar initSocket para inicializar Socket.IO
+const { initSocket } = require('./src/utils/socket');
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5500;
 
 // Crear el servidor HTTP
 const server = http.createServer(app);
 
 // Inicializar Socket.IO con initSocket
-initSocket(server); // Aquí llamamos a la función para inicializar Socket.IO
+initSocket(server);
 
 // Iniciar el servidor en el puerto especificado
 server.listen(PORT, () => {
