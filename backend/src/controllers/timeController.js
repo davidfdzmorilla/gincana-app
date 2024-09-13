@@ -1,5 +1,6 @@
 const db = require('../config/db');
 const { registrarAuditoria } = require('../utils/auditLogger');
+const { emitirActualizacionTiempos } = require('../utils/socket');
 
 // Controlador para registrar el tiempo de un corredor
 const registrarTiempo = (req, res) => {
@@ -23,6 +24,9 @@ const registrarTiempo = (req, res) => {
       // Si no existe una vuelta duplicada, registramos la nueva vuelta
       db.query('INSERT INTO times (runner_id, vuelta, tiempo) VALUES (?, ?, ?)', [runner_id, vuelta, tiempo], (err, result) => {
         if (err) return res.status(500).json({ message: 'Error al registrar el tiempo.' });
+
+        // Emitir la actualización de tiempos a través de WebSocket
+        emitirActualizacionTiempos({ runner_id, vuelta, tiempo });
 
         // Registrar evento de auditoría
         registrarAuditoria(adminUserId, 'CREATE', 'times', result.insertId);

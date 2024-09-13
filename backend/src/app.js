@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 const rateLimit = require('express-rate-limit');
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
@@ -10,6 +11,15 @@ const teamRoutes = require('./routes/teamRoutes');
 
 // Crear la app de Express
 const app = express();
+
+// Habilitar CORS
+// app.use(cors({
+//   origin: 'http://localhost:5500',
+//   methods: 'GET,POST,PUT,DELETE',
+//   crerdentials: true
+// }));
+
+app.use(cors());
 
 // Middleware para procesar JSON
 app.use(express.json());
