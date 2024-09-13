@@ -13,6 +13,7 @@ const AddUser = () => {
   const [rol, setRol] = useState('corredor');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [validationErrors, setValidationErrors] = useState({});
   const [isFading, setIsFading] = useState(false);
 
   // Cargar equipos desde la API cuando se monte el componente
@@ -29,14 +30,63 @@ const AddUser = () => {
     fetchEquipos();
   }, []);
 
+  // Función para validar el formulario
+  const validateForm = () => {
+    let errors = {};
+
+    // Validar nombre
+    if (!nombre.trim()) {
+      errors.nombre = 'El nombre es obligatorio';
+    }
+
+    // Validar email
+    const emailRegex = /\S+@\S+\.\S+/;
+    if (!email.trim()) {
+      errors.email = 'El email es obligatorio';
+    } else if (!emailRegex.test(email)) {
+      errors.email = 'El formato del email es incorrecto';
+    }
+
+    // Validar teléfono
+    const telefonoRegex = /^[0-9]{9}$/;
+    if (telefono && !telefonoRegex.test(telefono)) {
+      errors.telefono = 'El teléfono debe contener solo 9 dígitos';
+    }
+
+    // Validar contraseña
+    if (password.length < 6) {
+      errors.password = 'La contraseña debe tener al menos 6 caracteres';
+    }
+
+    // Validar edad
+    if (!edad || edad <= 0) {
+      errors.edad = 'La edad debe ser mayor a 0';
+    }
+
+    // Validar equipo
+    if (!equipo.trim()) {
+      errors.equipo = 'Debes seleccionar o ingresar un equipo';
+    }
+
+    setValidationErrors(errors);
+
+    return Object.keys(errors).length === 0; // Retorna true si no hay errores
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Validar formulario
+    if (!validateForm()) {
+      return;
+    }
 
     try {
       await userService.addUser({ nombre, email, telefono, password, edad, equipo, rol });
       setSuccess('Usuario añadido exitosamente');
       setError('');
       setIsFading(false);
+      setValidationErrors({});
 
       // Limpiar formulario
       setNombre('');
@@ -91,26 +141,28 @@ const AddUser = () => {
             {error}
           </div>
         )}
-        <form onSubmit={handleSubmit}>
+<form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label className="block text-gray-700">Nombre</label>
             <input
               type="text"
               value={nombre}
               onChange={(e) => setNombre(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md"
+              className={`w-full px-4 py-2 border ${validationErrors.nombre ? 'border-red-500' : 'border-gray-300'} rounded-md`}
               required
             />
+            {validationErrors.nombre && <p className="text-red-500 text-sm">{validationErrors.nombre}</p>}
           </div>
           <div className="mb-4">
             <label className="block text-gray-700">Email</label>
             <input
-              type="email"
+              type="text"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md"
+              className={`w-full px-4 py-2 border ${validationErrors.email ? 'border-red-500' : 'border-gray-300'} rounded-md`}
               required
             />
+            {validationErrors.email && <p className="text-red-500 text-sm">{validationErrors.email}</p>}
           </div>
           <div className="mb-4">
             <label className="block text-gray-700">Teléfono</label>
@@ -118,8 +170,9 @@ const AddUser = () => {
               type="tel"
               value={telefono}
               onChange={(e) => setTelefono(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md"
+              className={`w-full px-4 py-2 border ${validationErrors.telefono ? 'border-red-500' : 'border-gray-300'} rounded-md`}
             />
+            {validationErrors.telefono && <p className="text-red-500 text-sm">{validationErrors.telefono}</p>}
           </div>
           <div className="mb-4">
             <label className="block text-gray-700">Contraseña</label>
@@ -127,9 +180,10 @@ const AddUser = () => {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md"
+              className={`w-full px-4 py-2 border ${validationErrors.password ? 'border-red-500' : 'border-gray-300'} rounded-md`}
               required
             />
+            {validationErrors.password && <p className="text-red-500 text-sm">{validationErrors.password}</p>}
           </div>
           <div className="mb-4">
             <label className="block text-gray-700">Edad</label>
@@ -137,15 +191,16 @@ const AddUser = () => {
               type="number"
               value={edad}
               onChange={(e) => setEdad(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md"
+              className={`w-full px-4 py-2 border ${validationErrors.edad ? 'border-red-500' : 'border-gray-300'} rounded-md`}
             />
+            {validationErrors.edad && <p className="text-red-500 text-sm">{validationErrors.edad}</p>}
           </div>
           <div className="mb-4">
             <label className="block text-gray-700">Equipo</label>
             <select
               value={equipo}
               onChange={(e) => setEquipo(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md"
+              className={`w-full px-4 py-2 border ${validationErrors.equipo ? 'border-red-500' : 'border-gray-300'} rounded-md`}
             >
               <option value="">Selecciona un equipo o ingresa uno nuevo</option>
               {equipos.map((equipo) => (
@@ -161,6 +216,7 @@ const AddUser = () => {
               onChange={(e) => setEquipo(e.target.value)}
               className="w-full mt-2 px-4 py-2 border border-gray-300 rounded-md"
             />
+            {validationErrors.equipo && <p className="text-red-500 text-sm">{validationErrors.equipo}</p>}
           </div>
           <div className="mb-4">
             <label className="block text-gray-700">Rol</label>
