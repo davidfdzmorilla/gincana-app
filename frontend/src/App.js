@@ -1,12 +1,13 @@
 import './App.css';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { useContext } from 'react';
+import UserProvider, {UserContext} from './context/UserContext';
+import ProtectedRoute from './components/ProtectedRoute';
 import Login from './components/Login';
 import Ranking from './components/Ranking';
-import ProtectedRoute from './components/ProtectedRoute';
-import UserProvider, {UserContext} from './context/UserContext';  // Solo importamos el UserProvider aquí
 import AsideAdmin from './components/AsideAdmin';
 import AsideRunner from './components/AsideRunner';
-import { useContext } from 'react';
+import AddUser from './components/AddUser';
 
 const App = () => {
   return (
@@ -27,6 +28,7 @@ const AppContent = () => {
       {/* Mostrar el aside según el rol del usuario */}
       {user?.rol === 'admin' && <AsideAdmin />}
       {user?.rol === 'corredor' && <AsideRunner />}
+      {console.log(user)}
 
       <div className={`flex-1 p-4 ${user ? 'md:ml-64' : ''}`}>
         <Routes>
@@ -37,6 +39,14 @@ const AppContent = () => {
             element={
               <ProtectedRoute>
                 <Ranking />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/add-user"
+            element={
+              <ProtectedRoute>
+                {user?.rol === 'admin' && <AddUser />}
               </ProtectedRoute>
             }
           />
