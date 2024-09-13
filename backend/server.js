@@ -2,7 +2,7 @@ const http = require('http');
 const app = require('./src/app');
 const { initSocket } = require('./src/utils/socket'); // Usar initSocket para inicializar Socket.IO
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;
 
 // Crear el servidor HTTP
 const server = http.createServer(app);
