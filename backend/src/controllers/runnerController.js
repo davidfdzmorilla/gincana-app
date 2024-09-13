@@ -74,7 +74,10 @@ const obtenerRankingCorredores = async (req, res) => {
       return res.status(404).json({ message: 'No se encontraron corredores con vueltas registradas.' });
     }
 
-    res.status(200).json({ corredores: result });
+    // Si el tiempo es 0 no devolver el corredor
+    const filteredResult = result.filter((corredor) => corredor.tiempo_total > 0);
+
+    res.status(200).json({ corredores: filteredResult });
   } catch (err) {
     console.error('Error en la base de datos:', err);
     return res.status(500).json({ message: 'Error en la base de datos.' });

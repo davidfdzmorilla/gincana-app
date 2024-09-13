@@ -30,7 +30,7 @@ const AppContent = () => {
       {user?.rol === 'corredor' && <AsideRunner />}
       {console.log(user)}
 
-      <div className={`flex-1 p-4 ${user ? 'md:ml-64' : ''}`}>
+      <div className={`flex-1 ${user ? 'md:ml-64' : ''}`}>
         <Routes>
           <Route path="/" element={<Login />} />
           <Route path="/login" element={<Login />} />
