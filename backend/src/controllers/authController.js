@@ -3,28 +3,22 @@ const jwt = require('jsonwebtoken');
 const db = require('../config/db');
 
 // Controlador para login
-const login = (req, res) => {
+const login = async (req, res) => {
   const { email, password } = req.body;
 
   // Verificar si el usuario existe
-  db.query('SELECT * FROM users WHERE email = ?', [email], (err, result) => {
-    if (err) return res.status(500).json({ message: 'Error en la base de datos' });
-    if (result.length === 0) return res.status(404).json({ message: 'Usuario no encontrado' });
+  const [result] = await db.query('SELECT * FROM users WHERE email = ?', [email]);
+  if (result.length === 0) return res.status(404).json({ message: 'Usuario no encontrado' });
 
-    const user = result[0];
+  const user = result[0];
 
-    // Verificar la contraseña
-    bcrypt.compare(password, user.password, (err, isMatch) => {
-      if (!isMatch) return res.status(401).json({ message: 'Contraseña incorrecta' });
+  // Verificar la contraseña
+  const validPassword = await bcrypt.compare(password, user.password);
+  if (!validPassword) return res.status(400).json({ message: 'Contraseña incorrecta' });
 
-      // Crear un JWT
-      const token = jwt.sign({ id: user.id, rol: user.rol }, process.env.JWT_SECRET, {
-        expiresIn: '1h',
-      });
-
-      res.json({ user: { id: user.id, nombre: user.nombre, email: user.email, rol: user.rol }, token });
-    });
-  });
+  // Crear y devolver user y token
+  const token = jwt.sign({ id: user.id, rol: user.rol }, process.env.JWT_SECRET, { expiresIn: '1h' });
+  res.status(200).json({ user: { id: user.id, nombre: user.nombre, email: user.email, rol: user.rol }, token });
 };
 
 module.exports = { login };
