@@ -5,8 +5,7 @@ function Chrono() {
   const [cronometros, setCronometros] = useState([]);
   const [corredores, setCorredores] = useState([]);
   const [selectedCorredor, setSelectedCorredor] = useState('');
-  const [loading, setLoading] = useState(true); // Añadimos estado de carga
-  const [error, setError] = useState(''); // Estado para manejar posibles errores
+  const [loading, setLoading] = useState(true);
   const intervalRef = useRef([]);
 
   // Obtener los corredores cuando se monta el componente
@@ -19,11 +18,10 @@ function Chrono() {
         } else {
           throw new Error('Formato de datos incorrecto');
         }
-        setLoading(false); // Deshabilitar la carga una vez que tengamos los datos
+        setLoading(false);
       } catch (err) {
-        console.error('Error al cargar corredores:', err); // Capturar y mostrar el error
-        setError('Error al cargar corredores.');
-        setLoading(false); // Asegurarse de que se detenga la carga en caso de error
+        console.error('Error al cargar corredores:', err);
+        setLoading(false);
       }
     };
 
@@ -34,19 +32,27 @@ function Chrono() {
   const obtenerUltimaVuelta = async (runnerId) => {
     try {
       const response = await timeService.getUltimaVuelta(runnerId);
-      // Si no hay vueltas, establecer la primera
       if (!response.vueltas.length) {
         return 1;
       }
-      return response.vueltas.length + 1; // Sumar 1 a la vuelta actual para registrar la siguiente
+      return response.vueltas.length + 1;
     } catch (error) {
-      setError('Error al obtener la última vuelta.');
+      console.error('Error al obtener la última vuelta.');
       return 1;
     }
   };
 
   // Añadir un nuevo cronómetro
   const agregarCronometro = async () => {
+    const corredorYaTieneCronometro = cronometros.some(
+      (cronometro) => cronometro.corredorId === selectedCorredor
+    );
+
+    if (corredorYaTieneCronometro) {
+      alert('Este corredor ya tiene un cronómetro en marcha.');
+      return;
+    }
+
     if (selectedCorredor) {
       const nuevaVuelta = await obtenerUltimaVuelta(selectedCorredor);
       const nuevoCronometro = {
@@ -54,42 +60,46 @@ function Chrono() {
         tiempo: 0,
         inicio: null,
         vuelta: nuevaVuelta,
+        guardado: false,  // Estado que indica si el tiempo ha sido guardado
+        error: null,  // Estado para manejar errores de guardado por cronómetro
       };
       setCronometros((prevCronometros) => [...prevCronometros, nuevoCronometro]);
     }
   };
 
-  // Función para formatear el tiempo
+  // Formatear el tiempo
   const formatearTiempo = (tiempoEnMilisegundos) => {
     const horas = Math.floor(tiempoEnMilisegundos / (1000 * 60 * 60));
     const minutos = Math.floor((tiempoEnMilisegundos % (1000 * 60 * 60)) / (1000 * 60));
     const segundos = Math.floor((tiempoEnMilisegundos % (1000 * 60)) / 1000);
-    const milisegundos = Math.floor((tiempoEnMilisegundos % 1000) / 10); // Mostrar solo 2 decimales
-
+    const milisegundos = Math.floor((tiempoEnMilisegundos % 1000) / 10);
     return `${horas}:${minutos < 10 ? '0' : ''}${minutos}:${segundos < 10 ? '0' : ''}${segundos}.${milisegundos < 10 ? '0' : ''}${milisegundos}`;
   };
 
-  // Iniciar el cronómetro
+  // Iniciar cronómetro
   const iniciarCronometro = (index) => {
     const newCronometros = [...cronometros];
-    const startTime = performance.now() - newCronometros[index].tiempo; // Ajustar el tiempo de inicio
-
+    const startTime = performance.now() - newCronometros[index].tiempo;
     newCronometros[index].inicio = startTime;
 
     intervalRef.current[index] = setInterval(() => {
       const currentTime = performance.now();
-      newCronometros[index].tiempo = currentTime - startTime; // Calcular tiempo total
-      setCronometros((prevCronometros) => [...prevCronometros]);
-    }, 10); // Actualización cada 10ms
+      newCronometros[index].tiempo = currentTime - startTime;
+      setCronometros([...newCronometros]);
+    }, 10);
   };
 
-  // Detener el cronómetro y guardar el tiempo
-  const detenerYGuardar = async (index) => {
+  // Detener cronómetro sin guardarlo
+  const detenerCronometro = (index) => {
+    clearInterval(intervalRef.current[index]);
+  };
+
+  // Guardar el tiempo del cronómetro
+  const guardarTiempo = async (index) => {
     const newCronometros = [...cronometros];
     clearInterval(intervalRef.current[index]);
 
     try {
-      // Convertir el tiempo a segundos con milésimas
       const tiempoEnSegundos = (newCronometros[index].tiempo / 1000).toFixed(3);
 
       await timeService.registrarTiempo({
@@ -97,20 +107,20 @@ function Chrono() {
         vuelta: newCronometros[index].vuelta,
         tiempo: tiempoEnSegundos,
       });
+
+      newCronometros[index].guardado = true;
+      newCronometros[index].error = null; // Limpiar cualquier error si la operación fue exitosa
+      setCronometros([...newCronometros]);
       console.log('Tiempo guardado exitosamente');
     } catch (error) {
-      setError('Error al guardar el tiempo.');
+      console.error('Error al guardar el tiempo:', error);
+      newCronometros[index].error = 'Error al guardar el tiempo'; // Marcar el error en el cronómetro
+      setCronometros([...newCronometros]);
     }
-
-    setCronometros((prevCronometros) => prevCronometros.filter((_, i) => i !== index)); // Eliminar cronómetro después de guardar
   };
 
   if (loading) {
     return <div>Cargando corredores...</div>;
-  }
-
-  if (error) {
-    return <div className="text-red-500">{error}</div>;
   }
 
   return (
@@ -142,18 +152,33 @@ function Chrono() {
             <p className="text-lg">Corredor: {corredores.find(c => c.runner_id === cronometro.corredorId)?.nombre}</p>
             <p>Vuelta: {cronometro.vuelta}</p>
             <p>Tiempo: {formatearTiempo(cronometro.tiempo)}</p>
-            <button
-              onClick={() => iniciarCronometro(index)}
-              className="bg-green-500 text-white px-3 py-1 rounded mr-2"
-            >
-              Iniciar
-            </button>
-            <button
-              onClick={() => detenerYGuardar(index)}
-              className="bg-red-500 text-white px-3 py-1 rounded"
-            >
-              Detener y Guardar
-            </button>
+
+            {!cronometro.guardado && (
+              <>
+                <button
+                  onClick={() => iniciarCronometro(index)}
+                  className="bg-green-500 text-white px-3 py-1 rounded mr-2"
+                >
+                  Iniciar
+                </button>
+                <button
+                  onClick={() => detenerCronometro(index)}
+                  className="bg-yellow-500 text-white px-3 py-1 rounded mr-2"
+                >
+                  Parar
+                </button>
+                <button
+                  onClick={() => guardarTiempo(index)}
+                  className="bg-red-500 text-white px-3 py-1 rounded"
+                >
+                  Guardar
+                </button>
+              </>
+            )}
+
+            {cronometro.guardado && <p className="text-green-500">Tiempo guardado exitosamente</p>}
+
+            {cronometro.error && <p className="text-red-500">{cronometro.error}</p>}
           </div>
         ))}
       </div>
