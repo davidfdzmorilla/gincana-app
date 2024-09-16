@@ -19,13 +19,13 @@ const getUltimaVuelta = async (runnerId) => {
       Authorization: `Bearer ${token}`,
     },
   });
-  console.log(response.data);
   return response.data;
 };
 
 const registrarTiempo = async (data) => {
+  console.log(data);
   const token = localStorage.getItem('token');
-  const response = await axios.post(`${API_URL}/times`, data, {
+  const response = await axios.post(`${API_URL}/times/register`, data, {
     headers: {
       Authorization: `Bearer ${token}`,
     },

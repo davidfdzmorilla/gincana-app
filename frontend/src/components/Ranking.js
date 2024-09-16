@@ -53,7 +53,7 @@ const Ranking = () => {
       <h1 className="text-4xl font-bold mb-4">¡Bienvenido, {user.nombre}!</h1>
       <h2 className="text-2xl font-semibold mb-6">Ranking de Corredores</h2>
 
-      <ul className="ranking-list space-y-4">
+      <ul className="ranking-list space-y-4 pb-4" >
         <AnimatePresence>
           {ranking.map((corredor, index) => (
             <motion.li
