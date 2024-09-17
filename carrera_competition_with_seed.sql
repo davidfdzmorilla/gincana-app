@@ -1,9 +1,10 @@
-CREATE DATABASE carrera_competition;
+
+-- CREATE DATABASE IF NOT EXISTS carrera_competition;
 
 USE carrera_competition;
 
 -- Tabla de Usuarios
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
   id INT AUTO_INCREMENT PRIMARY KEY,
   nombre VARCHAR(100) NOT NULL,
   email VARCHAR(100) NOT NULL UNIQUE,
@@ -15,7 +16,7 @@ CREATE TABLE users (
 );
 
 -- Tabla de Equipos
-CREATE TABLE teams (
+CREATE TABLE IF NOT EXISTS teams (
   id INT AUTO_INCREMENT PRIMARY KEY,
   nombre VARCHAR(100) NOT NULL,
   foto_perfil VARCHAR(255),
@@ -23,7 +24,7 @@ CREATE TABLE teams (
 );
 
 -- Tabla de Corredores
-CREATE TABLE runners (
+CREATE TABLE IF NOT EXISTS runners (
   id INT AUTO_INCREMENT PRIMARY KEY,
   user_id INT NOT NULL,
   edad INT,
@@ -34,7 +35,7 @@ CREATE TABLE runners (
 );
 
 -- Tabla de Tiempos
-CREATE TABLE times (
+CREATE TABLE IF NOT EXISTS times (
   id INT AUTO_INCREMENT PRIMARY KEY,
   runner_id INT NOT NULL,
   vuelta INT NOT NULL,
@@ -52,3 +53,8 @@ CREATE TABLE audit_logs (
   entity_id INT,
   timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Datos de prueba para Usuarios (un admin y dos corredores)
+INSERT INTO users (nombre, email, telefono, foto_perfil, password, rol) VALUES
+('Admin User', 'admin@carrera.com', '123456789', 'admin.jpg', '$2a$10$ECGJt8tJNzLXOq3bcO9/6e/qonzW9j37esb9iZ2VBhJrf8XByK.X2', 'admin')
+;

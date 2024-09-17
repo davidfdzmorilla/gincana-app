@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    ports:
+      - "5500:5500"
+    env_file: .env
+    depends_on:
+      - db
+    networks:
+      - app-network
+
+  frontend:
+    build:
+      context: ./frontend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+  db:
+    image: mysql:8.0
+    env_file: .env
+    ports:
+      - "3406:3306"
+    volumes:
+      - db-data:/var/lib/mysql
+      - ./carrera_competition_with_seed.sql:/docker-entrypoint-initdb.d/carrera_competition_with_seed.sql
+    networks:
+      - app-network
+
+volumes:
+  db-data:
+
+
+networks:
+  app-network:
