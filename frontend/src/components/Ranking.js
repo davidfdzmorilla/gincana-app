@@ -4,12 +4,17 @@ import io from 'socket.io-client';
 import { motion, AnimatePresence } from 'framer-motion';
 import { UserContext } from '../context/UserContext';
 
+let socket; // Mover la declaración del socket fuera del componente
+
 const Ranking = () => {
   const { user } = useContext(UserContext);
   const [ranking, setRanking] = useState([]);
-  const socket = io(process.env.REACT_APP_API_URL);
 
   useEffect(() => {
+    if (!socket) {
+      socket = io(process.env.REACT_APP_API_URL); // Inicializar socket solo una vez
+    }
+
     const fetchRanking = async () => {
       try {
         const data = await runnerService.getRanking();
@@ -21,17 +26,24 @@ const Ranking = () => {
 
     fetchRanking();
 
-    // Escuchar eventos de WebSocket para actualizaciones
+    // Escuchar el evento de WebSocket para actualizaciones
     socket.on('actualizacionTiempos', (data) => {
       fetchRanking();
     });
 
     // Limpiar el socket al desmontar el componente
     return () => {
-      socket.off('actualizacionTiempos');
+      if (socket) {
+        socket.off('actualizacionTiempos');
+        socket.disconnect();
+        socket = null; // Liberar el socket para evitar problemas de reconexión
+      }
     };
+  }, []);
 
-  }, [socket]);
+  if (!user) {
+    return <div>Loading...</div>; // Mostrar un mensaje de carga si el usuario no está disponible
+  }
 
   // Comparar el nuevo ranking con el anterior para asegurarse de que haya animación
   const getUniqueKey = (corredor) => `${corredor.runner_id}-${corredor.tiempo_total}-${corredor.total_vueltas}`;
@@ -41,7 +53,7 @@ const Ranking = () => {
       <h1 className="text-4xl font-bold mb-4">¡Bienvenido, {user.nombre}!</h1>
       <h2 className="text-2xl font-semibold mb-6">Ranking de Corredores</h2>
 
-      <ul className="ranking-list space-y-4">
+      <ul className="ranking-list space-y-4 pb-4" >
         <AnimatePresence>
           {ranking.map((corredor, index) => (
             <motion.li

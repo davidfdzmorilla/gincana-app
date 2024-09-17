@@ -4,7 +4,7 @@ import { UserContext } from '../context/UserContext';
 import { FaUser, FaSignOutAlt } from 'react-icons/fa';
 import { FaRankingStar } from "react-icons/fa6";
 import { RiUserAddFill } from "react-icons/ri";
-import { IoSettings } from "react-icons/io5";
+import { MdMoreTime } from "react-icons/md";
 
 const AsideAdmin = () => {
   const { user, setUser } = useContext(UserContext);
@@ -38,8 +38,8 @@ const AsideAdmin = () => {
         <Link to="/add-user" className="md:mb-2 text-gray-300 hover:text-white text-center md:text-left">
           <RiUserAddFill className="inline" size={30} />
         </Link>
-        <Link to="/settings" className="md:mb-2 text-gray-300 hover:text-white text-center md:text-left">
-          <IoSettings className="inline" size={30} />
+        <Link to="/chrono" className="md:mb-2 text-gray-300 hover:text-white text-center md:text-left">
+          <MdMoreTime className="inline" size={30} />
         </Link>
         <span
           onClick={handleLogout}

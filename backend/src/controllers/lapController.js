@@ -10,8 +10,11 @@ const obtenerVueltas = async (req, res) => {
     // Realizar la consulta para obtener las vueltas
     const [result] = await db.query('SELECT * FROM times WHERE runner_id = ?', [runner_id]);
 
-    if (result.length === 0) {
-      return res.status(404).json({ message: 'No se encontraron vueltas para este corredor.' });
+    // Si no se encontraron vueltas, devolver 0 vueltas
+    if (!result.length) {
+      // Registrar evento de auditoría
+      registrarAuditoria(adminUserId, 'READ', 'times', runner_id);
+      return res.status(200).json({ vueltas: [] });
     }
 
     // Registrar evento de auditoría

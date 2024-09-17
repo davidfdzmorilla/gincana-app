@@ -8,6 +8,7 @@ import Ranking from './components/Ranking';
 import AsideAdmin from './components/AsideAdmin';
 import AsideRunner from './components/AsideRunner';
 import AddUser from './components/AddUser';
+import Chrono from './components/Chrono';
 
 const App = () => {
   return (
@@ -28,7 +29,6 @@ const AppContent = () => {
       {/* Mostrar el aside según el rol del usuario */}
       {user?.rol === 'admin' && <AsideAdmin />}
       {user?.rol === 'corredor' && <AsideRunner />}
-      {console.log(user)}
 
       <div className={`flex-1 ${user ? 'md:ml-64' : ''}`}>
         <Routes>
@@ -39,6 +39,14 @@ const AppContent = () => {
             element={
               <ProtectedRoute>
                 <Ranking />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/chrono"
+            element={
+              <ProtectedRoute>
+                <Chrono />
               </ProtectedRoute>
             }
           />
