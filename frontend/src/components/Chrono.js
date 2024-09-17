@@ -1,10 +1,10 @@
-import { useEffect, useState, useRef } from 'react';
-import timeService from '../services/timeService';
+import { useEffect, useState, useRef } from "react";
+import timeService from "../services/timeService";
 
 function Chrono() {
   const [cronometros, setCronometros] = useState([]);
   const [corredores, setCorredores] = useState([]);
-  const [selectedCorredor, setSelectedCorredor] = useState('');
+  const [selectedCorredor, setSelectedCorredor] = useState("");
   const [loading, setLoading] = useState(true);
   const intervalRef = useRef({});
 
@@ -13,13 +13,13 @@ function Chrono() {
     const handleBeforeUnload = (e) => {
       if (cronometros.some((crono) => crono.inicio)) {
         e.preventDefault();
-        e.returnValue = '';
+        e.returnValue = "";
       }
     };
-    window.addEventListener('beforeunload', handleBeforeUnload);
+    window.addEventListener("beforeunload", handleBeforeUnload);
 
     return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
+      window.removeEventListener("beforeunload", handleBeforeUnload);
     };
   }, [cronometros]);
 
@@ -31,11 +31,11 @@ function Chrono() {
         if (data && data.corredores) {
           setCorredores(data.corredores);
         } else {
-          throw new Error('Formato de datos incorrecto');
+          throw new Error("Formato de datos incorrecto");
         }
         setLoading(false);
       } catch (err) {
-        console.error('Error al cargar corredores:', err);
+        console.error("Error al cargar corredores:", err);
         setLoading(false);
       }
     };
@@ -51,7 +51,7 @@ function Chrono() {
       }
       return response.vueltas.length + 1;
     } catch (error) {
-      console.error('Error al obtener la última vuelta.');
+      console.error("Error al obtener la última vuelta.");
       return 1;
     }
   };
@@ -69,18 +69,25 @@ function Chrono() {
         guardado: false,
         error: null,
       };
-      setCronometros((prevCronometros) => [...prevCronometros, nuevoCronometro]);
-      setSelectedCorredor(''); // Restablece el corredor seleccionado
+      setCronometros((prevCronometros) => [
+        ...prevCronometros,
+        nuevoCronometro,
+      ]);
+      setSelectedCorredor(""); // Restablece el corredor seleccionado
     }
   };
 
   // Formatear el tiempo
   const formatearTiempo = (tiempoEnMilisegundos) => {
     const horas = Math.floor(tiempoEnMilisegundos / (1000 * 60 * 60));
-    const minutos = Math.floor((tiempoEnMilisegundos % (1000 * 60 * 60)) / (1000 * 60));
+    const minutos = Math.floor(
+      (tiempoEnMilisegundos % (1000 * 60 * 60)) / (1000 * 60)
+    );
     const segundos = Math.floor((tiempoEnMilisegundos % (1000 * 60)) / 1000);
     const milisegundos = Math.floor((tiempoEnMilisegundos % 1000) / 10);
-    return `${horas}:${minutos < 10 ? '0' : ''}${minutos}:${segundos < 10 ? '0' : ''}${segundos}.${milisegundos < 10 ? '0' : ''}${milisegundos}`;
+    return `${horas}:${minutos < 10 ? "0" : ""}${minutos}:${
+      segundos < 10 ? "0" : ""
+    }${segundos}.${milisegundos < 10 ? "0" : ""}${milisegundos}`;
   };
 
   // Iniciar cronómetro
@@ -99,7 +106,9 @@ function Chrono() {
             const currentTime = performance.now();
             crono.tiempo = currentTime - startTime;
             setCronometros((prevCronos) =>
-              prevCronos.map((prevCrono) => (prevCrono.id === id ? { ...crono } : prevCrono))
+              prevCronos.map((prevCrono) =>
+                prevCrono.id === id ? { ...crono } : prevCrono
+              )
             );
           }, 10);
         }
@@ -139,11 +148,11 @@ function Chrono() {
         tiempo: tiempoEnSegundos,
       });
     } catch (error) {
-      console.error('Error al guardar el tiempo:', error);
+      console.error("Error al guardar el tiempo:", error);
       setCronometros((prevCronometros) =>
         prevCronometros.map((crono) => {
           if (crono.id === id) {
-            return { ...crono, error: 'Error al guardar el tiempo' };
+            return { ...crono, error: "Error al guardar el tiempo" };
           }
           return crono;
         })
@@ -154,7 +163,9 @@ function Chrono() {
   // Eliminar un cronómetro después de guardarlo
   const eliminarCronometro = (id) => {
     detenerCronometro(id);
-    setCronometros((prevCronometros) => prevCronometros.filter((crono) => crono.id !== id));
+    setCronometros((prevCronometros) =>
+      prevCronometros.filter((crono) => crono.id !== id)
+    );
     delete intervalRef.current[id];
   };
 
@@ -164,8 +175,10 @@ function Chrono() {
 
   return (
     <div className="p-8 bg-gradient-to-r from-purple-600 via-blue-500 to-indigo-600 text-white min-h-screen">
-      <h2 className="text-4xl font-bold mb-8 text-center">Registro de Tiempos</h2>
-  
+      <h2 className="text-4xl font-bold mb-8 text-center">
+        Registro de Tiempos
+      </h2>
+
       <div className="flex justify-center mb-8">
         <select
           onChange={(e) => setSelectedCorredor(Number(e.target.value))}
@@ -179,7 +192,7 @@ function Chrono() {
             </option>
           ))}
         </select>
-  
+
         <button
           onClick={agregarCronometro}
           className="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-r-lg focus:outline-none"
@@ -187,24 +200,30 @@ function Chrono() {
           Añadir Corredor
         </button>
       </div>
-  
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {cronometros.map((cronometro) => (
-          <div key={cronometro.id} className="bg-white p-6 rounded-lg shadow-xl text-gray-800">
+          <div
+            key={cronometro.id}
+            className="bg-white p-6 rounded-lg shadow-xl text-gray-800"
+          >
             <h3 className="text-2xl font-semibold mb-2">
-            Corredor: {
-              corredores.find((c) => c.runner_id === Number(cronometro.corredorId))?.nombre
-            }
-
+              {
+                corredores.find(
+                  (c) => c.runner_id === Number(cronometro.corredorId)
+                )?.nombre
+              }
             </h3>
             <p className="mb-1">
               <span className="font-bold">Vuelta:</span> {cronometro.vuelta}
             </p>
             <p className="mb-4">
-              <span className="font-bold">Tiempo:</span>{' '}
-              <span className="font-mono text-lg">{formatearTiempo(cronometro.tiempo)}</span>
+              <span className="font-bold">Tiempo:</span>{" "}
+              <span className="font-mono text-lg">
+                {formatearTiempo(cronometro.tiempo)}
+              </span>
             </p>
-  
+
             {!cronometro.guardado && (
               <div className="flex space-x-3">
                 <button
@@ -227,10 +246,12 @@ function Chrono() {
                 </button>
               </div>
             )}
-  
+
             {cronometro.guardado && (
               <div className="mt-4">
-                <p className="text-green-600 font-semibold">¡Tiempo guardado exitosamente!</p>
+                <p className="text-green-600 font-semibold">
+                  ¡Tiempo guardado exitosamente!
+                </p>
                 <button
                   onClick={() => eliminarCronometro(cronometro.id)}
                   className="mt-2 bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg focus:outline-none"
@@ -239,8 +260,10 @@ function Chrono() {
                 </button>
               </div>
             )}
-  
-            {cronometro.error && <p className="text-red-600 mt-2">{cronometro.error}</p>}
+
+            {cronometro.error && (
+              <p className="text-red-600 mt-2">{cronometro.error}</p>
+            )}
           </div>
         ))}
       </div>
