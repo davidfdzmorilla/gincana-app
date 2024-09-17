@@ -1,5 +1,5 @@
 
-CREATE DATABASE IF NOT EXISTS carrera_competition;
+-- CREATE DATABASE IF NOT EXISTS carrera_competition;
 
 USE carrera_competition;
 

@@ -1,4 +1,4 @@
-CREATE DATABASE carrera_competition;
+-- CREATE DATABASE carrera_competition;
 
 USE carrera_competition;
 

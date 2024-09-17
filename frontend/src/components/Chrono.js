@@ -163,14 +163,14 @@ function Chrono() {
   }
 
   return (
-    <div className="p-8 bg-gradient-to-r from-blue-500 to-indigo-600 text-white min-h-screen min-w-screen">
-      <h2 className="text-2xl font-bold mb-4">Registro de Tiempos</h2>
-
-      <div className="flex space-x-4">
+    <div className="p-8 bg-gradient-to-r from-purple-600 via-blue-500 to-indigo-600 text-white min-h-screen">
+      <h2 className="text-4xl font-bold mb-8 text-center">Registro de Tiempos</h2>
+  
+      <div className="flex justify-center mb-8">
         <select
-          onChange={(e) => setSelectedCorredor(e.target.value)}
+          onChange={(e) => setSelectedCorredor(Number(e.target.value))}
           value={selectedCorredor}
-          className="bg-gray-200 text-black p-2 rounded"
+          className="bg-white text-gray-800 p-3 rounded-l-lg w-64 focus:outline-none"
         >
           <option value="">Selecciona un corredor</option>
           {corredores.map((corredor) => (
@@ -179,57 +179,68 @@ function Chrono() {
             </option>
           ))}
         </select>
-
-        <button onClick={agregarCronometro} className="bg-blue-500 text-white px-4 py-2 rounded">
+  
+        <button
+          onClick={agregarCronometro}
+          className="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-r-lg focus:outline-none"
+        >
           Añadir Corredor
         </button>
       </div>
-
-      <div className="mt-4 space-y-4">
+  
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {cronometros.map((cronometro) => (
-          <div key={cronometro.id} className="bg-gray-100 p-4 rounded shadow-md">
-            <p className="text-black">
-              Corredor: {corredores.find((c) => c.runner_id === cronometro.corredorId)?.nombre}
-            </p>
-            <p className="text-black">Vuelta: {cronometro.vuelta}</p>
-            <p className="text-black">Tiempo: {formatearTiempo(cronometro.tiempo)}</p>
+          <div key={cronometro.id} className="bg-white p-6 rounded-lg shadow-xl text-gray-800">
+            <h3 className="text-2xl font-semibold mb-2">
+            Corredor: {
+              corredores.find((c) => c.runner_id === Number(cronometro.corredorId))?.nombre
+            }
 
+            </h3>
+            <p className="mb-1">
+              <span className="font-bold">Vuelta:</span> {cronometro.vuelta}
+            </p>
+            <p className="mb-4">
+              <span className="font-bold">Tiempo:</span>{' '}
+              <span className="font-mono text-lg">{formatearTiempo(cronometro.tiempo)}</span>
+            </p>
+  
             {!cronometro.guardado && (
-              <>
+              <div className="flex space-x-3">
                 <button
                   onClick={() => iniciarCronometro(cronometro.id)}
-                  className="bg-green-500 text-white px-3 py-1 rounded mr-2"
+                  className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg focus:outline-none"
                 >
                   Iniciar
                 </button>
                 <button
                   onClick={() => detenerCronometro(cronometro.id)}
-                  className="bg-yellow-500 text-white px-3 py-1 rounded mr-2"
+                  className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg focus:outline-none"
                 >
                   Parar
                 </button>
                 <button
                   onClick={() => guardarTiempo(cronometro.id)}
-                  className="bg-red-500 text-white px-3 py-1 rounded"
+                  className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg focus:outline-none"
                 >
                   Guardar
                 </button>
-              </>
+              </div>
             )}
-
+  
             {cronometro.guardado && (
-              <>
-                <p className="text-green-500">Tiempo guardado exitosamente</p>
+              <div className="mt-4">
+                <p className="text-green-600 font-semibold">¡Tiempo guardado exitosamente!</p>
                 <button
                   onClick={() => eliminarCronometro(cronometro.id)}
-                  className="bg-blue-500 text-white px-3 py-1 rounded"
+                  className="mt-2 bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg focus:outline-none"
                 >
                   Cerrar
                 </button>
-              </>
+              </div>
             )}
-
-            {cronometro.error && <p className="text-red-500">{cronometro.error}</p>}
+  
+            {cronometro.error && <p className="text-red-600 mt-2">{cronometro.error}</p>}
           </div>
         ))}
       </div>

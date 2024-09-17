@@ -45,15 +45,25 @@ const Ranking = () => {
     return <div>Loading...</div>; // Mostrar un mensaje de carga si el usuario no está disponible
   }
 
+  // Función para formatear el tiempo
+  const formatearTiempo = (tiempoEnSegundos) => {
+    const tiempoEnMilisegundos = tiempoEnSegundos * 1000;
+    const horas = Math.floor(tiempoEnMilisegundos / (1000 * 60 * 60));
+    const minutos = Math.floor((tiempoEnMilisegundos % (1000 * 60 * 60)) / (1000 * 60));
+    const segundos = Math.floor((tiempoEnMilisegundos % (1000 * 60)) / 1000);
+    const milisegundos = Math.floor((tiempoEnMilisegundos % 1000) / 10);
+    return `${horas}:${minutos < 10 ? '0' : ''}${minutos}:${segundos < 10 ? '0' : ''}${segundos}.${milisegundos < 10 ? '0' : ''}${milisegundos}`;
+  };
+
   // Comparar el nuevo ranking con el anterior para asegurarse de que haya animación
   const getUniqueKey = (corredor) => `${corredor.runner_id}-${corredor.tiempo_total}-${corredor.total_vueltas}`;
 
   return (
-    <div className="p-8 bg-gradient-to-r from-blue-500 to-indigo-600 text-white min-h-screen min-w-screen">
+    <div className="p-8 pb-20 bg-gradient-to-r from-purple-600 via-blue-500 to-indigo-600 text-white min-h-screen">
       <h1 className="text-4xl font-bold mb-4">¡Bienvenido, {user.nombre}!</h1>
       <h2 className="text-2xl font-semibold mb-6">Ranking de Corredores</h2>
 
-      <ul className="ranking-list space-y-4 pb-4" >
+      <ul className="ranking-list space-y-4 pb-4">
         <AnimatePresence>
           {ranking.map((corredor, index) => (
             <motion.li
@@ -61,7 +71,7 @@ const Ranking = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: .5 }}
+              transition={{ duration: 0.5 }}
               className="ranking-item flex items-center justify-between bg-white text-gray-800 p-4 rounded-lg shadow-md transform transition duration-300 hover:scale-105 hover:shadow-lg"
             >
               <span className="font-bold text-xl">{index + 1}.</span>
@@ -71,7 +81,9 @@ const Ranking = () => {
               </div>
               <div className="text-right">
                 <p className="text-lg">Vuelta {corredor.total_vueltas}</p>
-                <p className="text-sm text-gray-600">{corredor.tiempo_total} segundos</p>
+                <p className="text-sm text-gray-600">
+                  {formatearTiempo(corredor.tiempo_total)}
+                </p>
               </div>
             </motion.li>
           ))}
