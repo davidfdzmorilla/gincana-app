@@ -73,7 +73,7 @@ cd gincana-app
 
 ### Frontend
 
-1. Configura las variables de entorno en el archivo .env en el directorio backend:
+1. Configura las variables de entorno en el archivo .env en el directorio frontend:
 
    ```bash
    REACT_APP_API_URL=your_api_url
@@ -81,7 +81,23 @@ cd gincana-app
 
 ### Docker
 
-1. Construye las imágenes de Docker para el backend y el frontend:
+1. Configura las variables de entorno en el archivo .env en el directorio backend:
+
+   ```bash
+   NODE_ENV=development
+   PORT=5500
+   DB_HOST=db
+   DB_USER=your_db_user
+   DB_PASSWORD=your_db_password
+   DB_NAME=your_db_name
+
+   MYSQL_USER=your_db_user
+   MYSQL_PASSWORD=your_db_password
+   MYSQL_DATABASE=your_db_name
+   MYSQL_ROOT_PASSWORD=your_db_root_password
+   ```
+
+2. Construye las imágenes de Docker para el backend y el frontend:
 
    ```bash
    docker-compose up -d --build
