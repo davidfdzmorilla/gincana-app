@@ -8,7 +8,6 @@ Gincana App es una aplicación web de competición de carreras que permite a los
 - [Tecnologías Utilizadas](#tecnologías-utilizadas)
 - [Instalación](#instalación)
 - [Uso](#uso)
-- [Rutas del Backend](#rutas-del-backend)
 - [Licencia](#licencia)
 
 ## Características
@@ -114,14 +113,6 @@ cd gincana-app
 
 - Los corredores pueden ver sus tiempos y clasificaciones, actualizar su perfil y equipo, y subir una foto de perfil.
 - Las actualizaciones en tiempo real están disponibles en la página de ranking (/ranking).
-
-## Rutas del Backend
-
-- /auth/login: Iniciar sesión con credenciales.
-- /auth/register: Registrar un nuevo usuario.
-- /user-profile: Ver y editar el perfil de usuario.
-- /chrono: Gestión de tiempos para los corredores.
-- /ranking: Obtener el ranking actualizado de corredores y equipos.
 
 ## Licencia
 
