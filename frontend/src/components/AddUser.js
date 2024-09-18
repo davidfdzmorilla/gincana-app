@@ -70,7 +70,7 @@ const AddUser = () => {
 
     setValidationErrors(errors);
 
-    return Object.keys(errors).length === 0; // Retorna true si no hay errores
+    return Object.keys(errors).length === 0;
   };
 
   const handleSubmit = async (e) => {

@@ -26,11 +26,10 @@ const AppContent = () => {
 
   return (
     <div className="flex md:flex-row flex-col">
-      {/* Mostrar el aside según el rol del usuario */}
-      {user?.rol === "admin" && <AsideAdmin />}
-      {user?.rol === "corredor" && <AsideRunner />}
-
       <div className={`flex-1 ${user ? "md:ml-64" : ""}`}>
+        {/* Mostrar el aside según el rol del usuario */}
+        {user?.rol === "admin" && <AsideAdmin />}
+        {user?.rol === "corredor" && <AsideRunner />}
         <Routes>
           <Route path="/" element={<Login />} />
           <Route path="/login" element={<Login />} />
