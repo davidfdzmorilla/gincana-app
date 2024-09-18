@@ -67,9 +67,9 @@ const Ranking = () => {
     `${corredor.runner_id}-${corredor.tiempo_total}-${corredor.total_vueltas}`;
 
   return (
-    <div className="p-8 pb-20 bg-gradient-to-r from-purple-600 via-blue-500 to-indigo-600 text-white min-h-screen">
+    <div className="flex flex-col items-center p-8 pb-20 bg-gradient-to-r from-purple-600 via-blue-500 to-indigo-600 text-white min-h-screen">
       <h1 className="text-2xl font-semibold mb-6">Ranking de Corredores</h1>
-      <ul className="ranking-list space-y-4 pb-4">
+      <ul className="ranking-list space-y-4 pb-4 w-full flex flex-col items-center">
         {ranking.length === 0 && <p>No hay tiempos registrados.</p>}
         <AnimatePresence>
           {ranking.map((corredor, index) => (
@@ -79,7 +79,7 @@ const Ranking = () => {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.5 }}
-              className="ranking-item flex items-center justify-between bg-white text-gray-800 p-4 rounded-lg shadow-md transform transition duration-300 hover:scale-105 hover:shadow-lg"
+              className="ranking-item w-full flex items-center justify-between bg-white text-gray-800 p-4 rounded-lg shadow-md transform transition duration-300 hover:scale-105 hover:shadow-lg"
             >
               <div className="relative">
                 {index === 0 && (

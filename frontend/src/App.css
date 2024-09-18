@@ -38,6 +38,10 @@ form.form-add-user {
   padding: 0 .5rem 3rem;
 }
 
+.ranking-item {
+  max-width: 600px;
+}
+
 .medalla,
 .puesto {
   position: absolute;
