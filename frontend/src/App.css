@@ -32,3 +32,24 @@
   animation: fadeOut 0.5s ease forwards;
 }
 
+form.form-add-user {
+  max-height: 80vh;
+  overflow: scroll;
+  padding: 0 .5rem 3rem;
+}
+
+.medalla,
+.puesto {
+  position: absolute;
+  right: -17px;
+  bottom: -5px;
+}
+
+.puesto {
+  right: -12px;
+  bottom: 0;
+  background-color: #f1c40f;
+  color: #fff;
+  padding: 0 5px;
+  border-radius: 0 0 5px 0;
+}

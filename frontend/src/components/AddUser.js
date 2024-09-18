@@ -129,8 +129,8 @@ const AddUser = () => {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-      <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
-        <h2 className="text-2xl font-bold mb-6 text-center">Añadir Corredor</h2>
+      <div className="bg-white py-8 rounded-lg shadow-lg max-w-md w-full">
+        <h1 className="text-2xl font-bold mb-6 text-center">Añadir Corredor</h1>
 
         {/* Mostrar mensaje de éxito o error con animaciones */}
         {success && (
@@ -151,7 +151,7 @@ const AddUser = () => {
             {error}
           </div>
         )}
-        <form onSubmit={handleSubmit}>
+        <form className="form-add-user" onSubmit={handleSubmit}>
           <div className="mb-4">
             <label className="block text-gray-700">Nombre</label>
             <input

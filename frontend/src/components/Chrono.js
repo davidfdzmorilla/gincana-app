@@ -1,11 +1,14 @@
 import { useEffect, useState, useRef } from "react";
 import timeService from "../services/timeService";
+import Spinner from "./Spinner";
 
 function Chrono() {
   const [cronometros, setCronometros] = useState([]);
   const [corredores, setCorredores] = useState([]);
   const [selectedCorredor, setSelectedCorredor] = useState("");
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [isFading, setIsFading] = useState(false);
   const intervalRef = useRef({});
 
   // Bloquear recarga de la página si hay cronómetros en marcha
@@ -59,6 +62,11 @@ function Chrono() {
   // Añadir un nuevo cronómetro
   const agregarCronometro = async () => {
     if (selectedCorredor) {
+      // Buscamos si ya existe un cronómetro para el corredor seleccionado, si es así, mandamos un mensaje de error
+      if (cronometros.some((crono) => crono.corredorId === selectedCorredor)) {
+        setError("Ya existe un cronómetro para este corredor");
+        return;
+      }
       const nuevaVuelta = await obtenerUltimaVuelta(selectedCorredor);
       const nuevoCronometro = {
         id: Date.now(), // ID único para el cronómetro
@@ -169,21 +177,44 @@ function Chrono() {
     delete intervalRef.current[id];
   };
 
+  // useEffect para limpiar los mensajes de éxito o error después de 5 segundos y aplicar el fade-out
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => {
+        setIsFading(true); // Iniciar fade-out
+        const fadeTimer = setTimeout(() => {
+          setError("");
+        }, 500); // El tiempo de la animación de fade-out (500ms)
+        return () => clearTimeout(fadeTimer);
+      }, 4500); // Esperar 4.5 segundos antes de empezar el fade-out
+
+      return () => clearTimeout(timer);
+    }
+  }, [error]);
+
   if (loading) {
-    return <div>Cargando corredores...</div>;
+    return <Spinner />;
   }
 
   return (
-    <div className="p-8 bg-gradient-to-r from-purple-600 via-blue-500 to-indigo-600 text-white min-h-screen">
-      <h2 className="text-4xl font-bold mb-8 text-center">
+    <div className="p-8 pb-20 bg-gradient-to-r from-purple-600 via-blue-500 to-indigo-600 text-white min-h-screen">
+      <h2 className="text-3xl font-bold mb-8 text-center">
         Registro de Tiempos
       </h2>
-
+      {error && (
+        <div
+          className={`${
+            isFading ? "fade-out" : "slide-in"
+          } bg-red-500 text-white p-4 rounded-md mb-4`}
+        >
+          {error}
+        </div>
+      )}
       <div className="flex justify-center mb-8">
         <select
           onChange={(e) => setSelectedCorredor(Number(e.target.value))}
           value={selectedCorredor}
-          className="bg-white text-gray-800 p-3 rounded-l-lg w-64 focus:outline-none"
+          className="bg-white text-gray-800 p-2 rounded-l-lg w-64 focus:outline-none"
         >
           <option value="">Selecciona un corredor</option>
           {corredores.map((corredor) => (
@@ -195,7 +226,7 @@ function Chrono() {
 
         <button
           onClick={agregarCronometro}
-          className="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-r-lg focus:outline-none"
+          className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-r-lg focus:outline-none"
         >
           Añadir Corredor
         </button>
