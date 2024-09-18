@@ -56,5 +56,5 @@ CREATE TABLE audit_logs (
 
 -- Datos de prueba para Usuarios (un admin y dos corredores)
 INSERT INTO users (nombre, email, telefono, foto_perfil, password, rol) VALUES
-('Admin User', 'admin@carrera.com', '123456789', 'admin.jpg', '$2a$10$ECGJt8tJNzLXOq3bcO9/6e/qonzW9j37esb9iZ2VBhJrf8XByK.X2', 'admin')
+('Admin User', 'admin@carrera.com', '123456789', '/uploads/1726651644630-admin.webp', '$2a$10$ECGJt8tJNzLXOq3bcO9/6e/qonzW9j37esb9iZ2VBhJrf8XByK.X2', 'admin')
 ;

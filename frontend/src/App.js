@@ -1,14 +1,15 @@
-import './App.css';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import { useContext } from 'react';
-import UserProvider, {UserContext} from './context/UserContext';
-import ProtectedRoute from './components/ProtectedRoute';
-import Login from './components/Login';
-import Ranking from './components/Ranking';
-import AsideAdmin from './components/AsideAdmin';
-import AsideRunner from './components/AsideRunner';
-import AddUser from './components/AddUser';
-import Chrono from './components/Chrono';
+import "./App.css";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { useContext } from "react";
+import UserProvider, { UserContext } from "./context/UserContext";
+import ProtectedRoute from "./components/ProtectedRoute";
+import Login from "./components/Login";
+import Ranking from "./components/Ranking";
+import AsideAdmin from "./components/AsideAdmin";
+import AsideRunner from "./components/AsideRunner";
+import AddUser from "./components/AddUser";
+import Chrono from "./components/Chrono";
+import UserProfile from "./components/UserProfile";
 
 const App = () => {
   return (
@@ -20,17 +21,16 @@ const App = () => {
   );
 };
 
-
 const AppContent = () => {
   const { user } = useContext(UserContext);
 
   return (
     <div className="flex md:flex-row flex-col">
       {/* Mostrar el aside según el rol del usuario */}
-      {user?.rol === 'admin' && <AsideAdmin />}
-      {user?.rol === 'corredor' && <AsideRunner />}
+      {user?.rol === "admin" && <AsideAdmin />}
+      {user?.rol === "corredor" && <AsideRunner />}
 
-      <div className={`flex-1 ${user ? 'md:ml-64' : ''}`}>
+      <div className={`flex-1 ${user ? "md:ml-64" : ""}`}>
         <Routes>
           <Route path="/" element={<Login />} />
           <Route path="/login" element={<Login />} />
@@ -51,10 +51,18 @@ const AppContent = () => {
             }
           />
           <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <UserProfile />
+              </ProtectedRoute>
+            }
+          />
+          <Route
             path="/add-user"
             element={
               <ProtectedRoute>
-                {user?.rol === 'admin' && <AddUser />}
+                {user?.rol === "admin" && <AddUser />}
               </ProtectedRoute>
             }
           />
