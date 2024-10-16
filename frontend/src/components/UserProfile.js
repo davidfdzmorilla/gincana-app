@@ -17,6 +17,7 @@ const UserProfile = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [isFading, setIsFading] = useState(false); // Inicializa isFading
+  const [submit, setIsSubmit] = useState(false);
 
   // Referencia al input de archivo
   const fileInputRef = useRef(null);
@@ -31,8 +32,8 @@ const UserProfile = () => {
       });
       // Mostrar la imagen del usuario si tiene una, de lo contrario, usar avatar.webp
       setPreview(
-        user.foto_perfil
-          ? `${API_URL}${user.foto_perfil}`
+        user.avatar
+          ? `${API_URL}${user.avatar}`
           : `${API_URL}/uploads/avatar.webp`
       );
     }
@@ -83,6 +84,8 @@ const UserProfile = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    setIsSubmit(true);
+
     const userData = new FormData();
     userData.append("nombre", formData.nombre);
     userData.append("email", formData.email);
@@ -94,13 +97,16 @@ const UserProfile = () => {
     try {
       const response = await userService.editUser(userData);
       if (response.user) {
+        response.user.avatar = response.user.foto_perfil;
         setUser(response.user);
         localStorage.setItem("user", JSON.stringify(response.user));
-        setSuccess("Perfil actualizado correctamente");
+        setIsSubmit(false);
         setError("");
+        setSuccess("Perfil actualizado correctamente");
       }
     } catch (err) {
       setSuccess("");
+      setIsSubmit(false);
       setError("Hubo un error al actualizar el perfil");
     }
   };
@@ -114,18 +120,16 @@ const UserProfile = () => {
         {/* Mostrar mensaje de éxito o error con animaciones */}
         {success && (
           <div
-            className={`${
-              isFading ? "fade-out" : "slide-in"
-            } bg-green-500 text-white p-4 rounded-md mb-4 transition-all duration-500`}
+            className={`${isFading ? "fade-out" : "slide-in"
+              } bg-green-500 text-white p-4 rounded-md mb-4 transition-all duration-500`}
           >
             {success}
           </div>
         )}
         {error && (
           <div
-            className={`${
-              isFading ? "fade-out" : "slide-in"
-            } bg-red-500 text-white p-4 rounded-md mb-4 transition-all duration-500`}
+            className={`${isFading ? "fade-out" : "slide-in"
+              } bg-red-500 text-white p-4 rounded-md mb-4 transition-all duration-500`}
           >
             {error}
           </div>
@@ -203,7 +207,7 @@ const UserProfile = () => {
             type="submit"
             className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
           >
-            Guardar cambios
+            {submit ? "Enviando..." : "Guardar Cambios"}
           </button>
         </form>
       </div>

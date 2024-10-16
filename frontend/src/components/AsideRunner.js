@@ -12,7 +12,7 @@ const AsideRunner = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     setUser(null);
-    navigate("/login");
+    navigate("/dashboard/login");
   };
 
   if (!user || user.rol !== "corredor") {
@@ -20,7 +20,7 @@ const AsideRunner = () => {
   }
 
   return (
-    <aside className="z-10 bg-gray-800 text-white flex flex-col md:w-64 w-full md:h-screen fixed md:top-0 md:left-0 bottom-0 left-0">
+    <aside className="z-9999 bg-gray-800 text-white flex flex-col md:w-64 w-full md:h-screen fixed md:top-0 md:left-0 bottom-0 left-0">
       <div className="p-4 hidden md:block">
         <h1 className="text-xl font-bold mb-4">Corredor Dashboard</h1>
         <p>Bienvenido, {user.nombre}</p>
@@ -28,13 +28,13 @@ const AsideRunner = () => {
 
       <nav className="flex md:flex-col flex-row justify-between w-full md:justify-start p-4">
         <Link
-          to="/ranking"
+          to="dashboard/ranking"
           className="md:mb-2 text-gray-300 hover:text-white text-center md:text-left"
         >
           <FaRankingStar className="inline" size={30} />
         </Link>
         <Link
-          to="/profile"
+          to="/dashboard/profile"
           className="md:mb-2 text-gray-300 hover:text-white text-center md:text-left"
         >
           <FaUser className="inline" size={30} />

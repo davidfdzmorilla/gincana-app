@@ -17,7 +17,7 @@ const Login = () => {
     const token = localStorage.getItem("token");
     if (token) {
       // Redirigir al usuario a la página de ranking si ya está autenticado
-      navigate("/ranking");
+      navigate("/dashboard/ranking");
     }
   }, [navigate]);
 
@@ -54,7 +54,7 @@ const Login = () => {
       setUser(response.user);
 
       // Redirigir al usuario a una página protegida
-      navigate("/ranking");
+      navigate("/dashboard/ranking");
     } catch (err) {
       if (err.response && err.response.data) {
         setError(err.response.data.message || "Error desconocido");
@@ -83,9 +83,8 @@ const Login = () => {
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
       {error && (
         <div
-          className={`${
-            isFading ? "fade-out" : "slide-in"
-          } bg-red-500 text-white p-4 rounded-md mb-4`}
+          className={`${isFading ? "fade-out" : "slide-in"
+            } bg-red-500 text-white p-4 rounded-md mb-4`}
         >
           {error}
         </div>

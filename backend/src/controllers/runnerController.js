@@ -93,8 +93,39 @@ const obtenerRankingCorredores = async (req, res) => {
   }
 };
 
+// Obtener ranking de corredores mejor tiempo en una vuelta
+const obtenerRankingMejorTiempo = async (req, res) => {
+  const query = `
+  SELECT runner_id, MIN(tiempo) AS mejor_tiempo
+  FROM times
+  GROUP BY runner_id
+  ORDER BY mejor_tiempo ASC;
+`;
+
+  try {
+    const [result] = await db.query(query);
+    if (result.length === 0) {
+      return res.status(200).json({
+        message: "No se encontraron corredores con tiempos registrados.",
+        corredores: [],
+      });
+    }
+
+    return res.status(200).json({
+      message: "Ranking de corredores por mejor tiempo.",
+      corredores: result,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Error al obtener el ranking de corredores.",
+      error,
+    });
+  }
+};
+
 module.exports = {
   obtenerCorredores,
   obtenerMejorCorredor,
   obtenerRankingCorredores,
+  obtenerRankingMejorTiempo
 };

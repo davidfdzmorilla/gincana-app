@@ -32,12 +32,6 @@
   animation: fadeOut 0.5s ease forwards;
 }
 
-form.form-add-user {
-  max-height: 80vh;
-  overflow: scroll;
-  padding: 0 .5rem 3rem;
-}
-
 .ranking-item {
   max-width: 600px;
 }

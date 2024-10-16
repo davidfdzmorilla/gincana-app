@@ -27,4 +27,56 @@ const obtenerVueltas = async (req, res) => {
   }
 };
 
-module.exports = { obtenerVueltas };
+// Eliminar una vuelta específica
+const eliminarVuelta = async (req, res) => {
+  try {
+    const { lap } = req.params;
+    const adminUserId = req.user.id;
+    console.log('Eliminando vuelta:', lap);
+
+    // Realizar la consulta para eliminar la vuelta
+    const [result] = await db.query('DELETE FROM times WHERE vuelta = ?', [lap]);
+
+    // Si no se encontró la vuelta, devolver error
+    if (result.affectedRows === 0) {
+      console.error('Vuelta no encontrada:', lap);
+      return res.status(404).json({ message: 'Vuelta no encontrada.' });
+    }
+
+    // Registrar evento de auditoría
+    registrarAuditoria(adminUserId, 'DELETE', 'times', lap);
+
+    res.status(200).json({ message: 'Vuelta eliminada correctamente.' });
+  } catch (err) {
+    console.error('Error al eliminar vuelta:', err);
+    res.status(500).json({ message: 'Error en la base de datos.' });
+  }
+};
+
+// Coger ranking mejores tiempos por vuelta
+const obtenerMejorTiempoVueltas = async (req, res) => {
+  try {
+    // Realizar la consulta para obtener el ranking de mejores tiempos por vuelta
+    const [result] = await db.query('SELECT runner_id, MIN(tiempo) AS mejor_tiempo FROM times GROUP BY runner_id');
+    // Ordenar los resultados por tiempo
+    result.sort((a, b) => a.mejor_tiempo - b.mejor_tiempo);
+    // Coger los datos del usuario runner_id = id ruuners, en el runner user_id = id users
+    for (let i = 0; i < result.length; i++) {
+      const [runner] = await db.query('SELECT * FROM runners WHERE id = ?', [result[i].runner_id]);
+      const [user] = await db.query('SELECT * FROM users WHERE id = ?', [runner[0].user_id]);
+      result[i].nombre = user[0].nombre;
+      result[i].foto_perfil = user[0].foto_perfil;
+    }
+
+    res.status(200).json({ corredores: result });
+  } catch (err) {
+    console.error('Error al obtener ranking de mejores tiempos por vuelta:', err);
+    res.status(500).json({ message: 'Error en la base de datos.' });
+  }
+};
+
+module.exports = {
+  obtenerVueltas,
+  eliminarVuelta,
+  obtenerMejorTiempoVueltas,
+};

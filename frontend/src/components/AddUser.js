@@ -1,76 +1,86 @@
-import { useState, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import userService from "../services/userService";
-import teamService from "../services/teamService";
+import { FaPlus } from "react-icons/fa";
 
 const AddUser = () => {
-  const [nombre, setNombre] = useState("");
-  const [email, setEmail] = useState("");
-  const [telefono, setTelefono] = useState("");
-  const [password, setPassword] = useState("");
-  const [edad, setEdad] = useState("");
-  const [equipo, setEquipo] = useState("");
-  const [equipos, setEquipos] = useState([]);
-  const [rol, setRol] = useState("corredor");
+  const API_URL = process.env.REACT_APP_API_URL;
+  const [formData, setFormData] = useState({
+    nombre: "",
+    email: "",
+    password: "",
+    rol: "corredor",
+  });
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [validationErrors, setValidationErrors] = useState({});
   const [isFading, setIsFading] = useState(false);
+  const [preview, setPreview] = useState(`${API_URL}/uploads/avatar.webp`); // Ruta por defecto
+  const [avatar, setAvatar] = useState(null); // Avatar del usuario
+  const [submit, setIsSubmit] = useState(false);
 
-  // Cargar equipos desde la API cuando se monte el componente
-  useEffect(() => {
-    const fetchEquipos = async () => {
-      try {
-        const equiposData = await teamService.getTeams();
-        setEquipos(equiposData);
-      } catch (err) {
-        setError("Error al obtener los equipos");
-      }
-    };
-
-    fetchEquipos();
-  }, [success]);
+  const fileInputRef = useRef(null);
 
   // Función para validar el formulario
   const validateForm = () => {
     let errors = {};
 
     // Validar nombre
-    if (!nombre.trim()) {
+    if (!formData.nombre.trim()) {
       errors.nombre = "El nombre es obligatorio";
     }
 
-    // Validar email
-    const emailRegex = /\S+@\S+\.\S+/;
-    if (!email.trim()) {
-      errors.email = "El email es obligatorio";
-    } else if (!emailRegex.test(email)) {
-      errors.email = "El formato del email es incorrecto";
-    }
+    // Si el rol es admin, validar email y contraseña
+    if (formData.rol === "admin") {
+      const emailRegex = /\S+@\S+\.\S+/;
+      if (!formData.email.trim()) {
+        errors.email = "El email es obligatorio";
+      } else if (!emailRegex.test(formData.email)) {
+        errors.email = "El formato del email es incorrecto";
+      }
 
-    // Validar teléfono
-    const telefonoRegex = /^[0-9]{9}$/;
-    if (telefono && !telefonoRegex.test(telefono)) {
-      errors.telefono = "El teléfono debe contener solo 9 dígitos";
-    }
-
-    // Validar contraseña
-    if (password.length < 6) {
-      errors.password = "La contraseña debe tener al menos 6 caracteres";
-    }
-
-    // Validar edad
-    if (!edad || edad <= 0) {
-      errors.edad = "La edad debe ser mayor a 0";
-    }
-
-    // Validar equipo
-    if (!equipo.trim()) {
-      errors.equipo = "Debes seleccionar o ingresar un equipo";
+      if (formData.password.length < 6) {
+        errors.password = "La contraseña debe tener al menos 6 caracteres";
+      }
     }
 
     setValidationErrors(errors);
-
     return Object.keys(errors).length === 0;
+  };
+
+  // Hook para manejar la animación de fade-out de los mensajes
+  useEffect(() => {
+    if (success || error) {
+      setIsFading(false); // Reinicia isFading al mostrar un nuevo mensaje
+      const timer = setTimeout(() => {
+        setIsFading(true); // Inicia el fade-out
+        const fadeTimer = setTimeout(() => {
+          setSuccess("");
+          setError("");
+          setIsFading(false); // Reinicia isFading después del fade-out
+        }, 500); // Duración de la animación de fade-out
+        return () => clearTimeout(fadeTimer);
+      }, 4500); // Tiempo antes de iniciar el fade-out
+
+      return () => clearTimeout(timer);
+    }
+  }, [success, error]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const handleAvatarChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setAvatar(file); // Guardar el archivo (objeto File) en el estado
+      setPreview(URL.createObjectURL(file)); // Mostrar la vista previa
+    }
+  };
+
+  // Función para abrir el selector de archivos al hacer clic en el avatar
+  const handleAvatarClick = () => {
+    fileInputRef.current.click();
   };
 
   const handleSubmit = async (e) => {
@@ -81,197 +91,164 @@ const AddUser = () => {
       return;
     }
 
-    try {
-      await userService.addUser({
-        nombre,
-        email,
-        telefono,
-        password,
-        edad,
-        equipo,
-        rol,
-      });
-      setSuccess("Usuario añadido exitosamente");
-      setError("");
-      setIsFading(false);
-      setValidationErrors({});
+    setIsSubmit(true);
 
-      // Limpiar formulario
-      setNombre("");
-      setEmail("");
-      setTelefono("");
-      setPassword("");
-      setEdad("");
-      setEquipo("");
-      setRol("corredor");
+    const userData = new FormData();
+
+    userData.append("nombre", formData.nombre);
+    userData.append("rol", formData.rol);
+
+    if (formData.rol === "admin") {
+      userData.append("email", formData.email);
+      userData.append("password", formData.password);
+    }
+
+    // Agregar el archivo solo si fue seleccionado
+    if (avatar) {
+      userData.append("foto_perfil", avatar);
+    }
+
+    try {
+      const response = await userService.addUser(userData);
+      console.log(response);
+      if (response.status === 201) {
+        setIsSubmit(false);
+        setError("");
+        setSuccess("Usuario añadido exitosamente");
+        setFormData({
+          nombre: "",
+          email: "",
+          password: "",
+          rol: "corredor",
+        });
+        setPreview(`${API_URL}/uploads/avatar.webp`);
+        setAvatar(null);
+      }
     } catch (err) {
-      setError("Hubo un error al añadir el usuario");
       setSuccess("");
-      setIsFading(false);
+      setIsSubmit(false);
+      setError(err.response.data.message);
     }
   };
 
-  // useEffect para limpiar los mensajes de éxito o error después de 5 segundos y aplicar el fade-out
-  useEffect(() => {
-    if (success || error) {
-      const timer = setTimeout(() => {
-        setIsFading(true); // Iniciar fade-out
-        const fadeTimer = setTimeout(() => {
-          setSuccess("");
-          setError("");
-        }, 500); // El tiempo de la animación de fade-out (500ms)
-        return () => clearTimeout(fadeTimer);
-      }, 4500); // Esperar 4.5 segundos antes de empezar el fade-out
-
-      return () => clearTimeout(timer);
-    }
-  }, [success, error]);
-
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-      <div className="bg-white py-8 rounded-lg shadow-lg max-w-md w-full">
-        <h1 className="text-2xl font-bold mb-6 text-center">Añadir Corredor</h1>
+    <div className="w-full flex flex-col items-center p-2 pb-20 bg-gradient-to-r from-purple-600 via-blue-500 to-indigo-600 text-white min-h-screen">
+      <div className="w-full bg-green-600 py-8 rounded-lg shadow-lg max-w-lg">
+        <h1 className="text-2xl font-bold px-6 text-center text-white">Añadir Corredor</h1>
 
         {/* Mostrar mensaje de éxito o error con animaciones */}
         {success && (
           <div
-            className={`${
-              isFading ? "fade-out" : "slide-in"
-            } bg-green-500 text-white p-4 rounded-md mb-4`}
+            className={`${isFading ? "fade-out" : "slide-in"
+              } bg-green-500 text-white p-4 rounded-md mb-4`}
           >
             {success}
           </div>
         )}
         {error && (
           <div
-            className={`${
-              isFading ? "fade-out" : "slide-in"
-            } bg-red-500 text-white p-4 rounded-md mb-4`}
+            className={`${isFading ? "fade-out" : "slide-in"
+              } bg-red-500 text-white p-4 rounded-md mb-4`}
           >
             {error}
           </div>
         )}
-        <form className="form-add-user" onSubmit={handleSubmit}>
+        <div className="flex flex-col items-center mb-6 relative">
+          <img
+            src={preview}
+            alt="Foto de perfil"
+            className="w-32 h-32 rounded-full object-cover"
+          />
+          <div
+            onClick={handleAvatarClick}
+            className="absolute top-0 w-32 h-32 rounded-full flex items-center justify-center opacity-0 hover:opacity-100 bg-opacity-50 cursor-pointer transition-opacity duration-300"
+          >
+            <FaPlus className="text-black text-4xl" />
+          </div>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleAvatarChange}
+            ref={fileInputRef}
+            className="hidden"
+          />
+        </div>
+        <form className="form-add-user w-full p-6"
+          onSubmit={handleSubmit}
+        >
           <div className="mb-4">
-            <label className="block text-gray-700">Nombre</label>
+            <label className="block text-white font-bold py-2">Nombre</label>
             <input
               type="text"
-              value={nombre}
-              onChange={(e) => setNombre(e.target.value)}
-              className={`w-full px-4 py-2 border ${
-                validationErrors.nombre ? "border-red-500" : "border-gray-300"
-              } rounded-md`}
+              name="nombre"
+              value={formData.nombre}
+              onChange={handleChange}
+              className={`w-full px-4 py-2 border ${validationErrors.nombre ? "border-red-500" : "border-gray-300"
+                } rounded-md text-gray-900`}
               required
             />
             {validationErrors.nombre && (
               <p className="text-red-500 text-sm">{validationErrors.nombre}</p>
             )}
           </div>
+
           <div className="mb-4">
-            <label className="block text-gray-700">Email</label>
-            <input
-              type="text"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className={`w-full px-4 py-2 border ${
-                validationErrors.email ? "border-red-500" : "border-gray-300"
-              } rounded-md`}
-              required
-            />
-            {validationErrors.email && (
-              <p className="text-red-500 text-sm">{validationErrors.email}</p>
-            )}
-          </div>
-          <div className="mb-4">
-            <label className="block text-gray-700">Teléfono</label>
-            <input
-              type="tel"
-              value={telefono}
-              onChange={(e) => setTelefono(e.target.value)}
-              className={`w-full px-4 py-2 border ${
-                validationErrors.telefono ? "border-red-500" : "border-gray-300"
-              } rounded-md`}
-            />
-            {validationErrors.telefono && (
-              <p className="text-red-500 text-sm">
-                {validationErrors.telefono}
-              </p>
-            )}
-          </div>
-          <div className="mb-4">
-            <label className="block text-gray-700">Contraseña</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className={`w-full px-4 py-2 border ${
-                validationErrors.password ? "border-red-500" : "border-gray-300"
-              } rounded-md`}
-              required
-            />
-            {validationErrors.password && (
-              <p className="text-red-500 text-sm">
-                {validationErrors.password}
-              </p>
-            )}
-          </div>
-          <div className="mb-4">
-            <label className="block text-gray-700">Edad</label>
-            <input
-              type="number"
-              value={edad}
-              onChange={(e) => setEdad(e.target.value)}
-              className={`w-full px-4 py-2 border ${
-                validationErrors.edad ? "border-red-500" : "border-gray-300"
-              } rounded-md`}
-            />
-            {validationErrors.edad && (
-              <p className="text-red-500 text-sm">{validationErrors.edad}</p>
-            )}
-          </div>
-          <div className="mb-4">
-            <label className="block text-gray-700">Equipo</label>
+            <label className="block text-white font-bold py-2">Rol</label>
             <select
-              value={equipo}
-              onChange={(e) => setEquipo(e.target.value)}
-              className={`w-full px-4 py-2 border ${
-                validationErrors.equipo ? "border-red-500" : "border-gray-300"
-              } rounded-md`}
-            >
-              <option value="">Selecciona un equipo o ingresa uno nuevo</option>
-              {equipos.map((equipo) => (
-                <option key={equipo.id} value={equipo.nombre}>
-                  {equipo.nombre}
-                </option>
-              ))}
-            </select>
-            <input
-              type="text"
-              placeholder="Nuevo equipo (si no está en la lista)"
-              value={equipo}
-              onChange={(e) => setEquipo(e.target.value)}
-              className="w-full mt-2 px-4 py-2 border border-gray-300 rounded-md"
-            />
-            {validationErrors.equipo && (
-              <p className="text-red-500 text-sm">{validationErrors.equipo}</p>
-            )}
-          </div>
-          <div className="mb-4">
-            <label className="block text-gray-700">Rol</label>
-            <select
-              value={rol}
-              onChange={(e) => setRol(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md"
+              name="rol"
+              value={formData.rol}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border border-gray-300 text-gray-600 rounded-md"
             >
               <option value="corredor">Corredor</option>
               <option value="admin">Administrador</option>
             </select>
           </div>
+
+          {/* Si el rol es admin, mostrar los campos de email y contraseña */}
+          {formData.rol === "admin" && (
+            <>
+              <div className="mb-4">
+                <label className="block text-white font-bold py-2">Email</label>
+                <input
+                  type="text"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  className={`w-full px-4 py-2 border ${validationErrors.email ? "border-red-500" : "border-gray-300"
+                    } rounded-md text-gray-900`}
+                  required
+                />
+                {validationErrors.email && (
+                  <p className="text-red-500 text-sm">{validationErrors.email}</p>
+                )}
+              </div>
+
+              <div className="mb-4">
+                <label className="block text-white font-bold py-2">Contraseña</label>
+                <input
+                  type="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  className={`w-full px-4 py-2 border ${validationErrors.password ? "border-red-500" : "border-gray-300"
+                    } rounded-md text-gray-900`}
+                  required
+                />
+                {validationErrors.password && (
+                  <p className="text-red-500 text-sm">
+                    {validationErrors.password}
+                  </p>
+                )}
+              </div>
+            </>
+          )}
+
           <button
             type="submit"
             className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition duration-300"
           >
-            Añadir Corredor
+            {submit ? "Enviando..." : "Añadir Usuario"}
           </button>
         </form>
       </div>

@@ -54,7 +54,7 @@ CREATE TABLE audit_logs (
   timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Datos de prueba para Usuarios (un admin y dos corredores)
+-- Datos
 INSERT INTO users (nombre, email, telefono, foto_perfil, password, rol) VALUES
-('Admin User', 'admin@carrera.com', '123456789', '/uploads/1726651644630-admin.webp', '$2a$10$ECGJt8tJNzLXOq3bcO9/6e/qonzW9j37esb9iZ2VBhJrf8XByK.X2', 'admin')
+('Admin', 'davidfdzmorilla@gmail.com', '660791578', '/uploads/avatar.webp', '$2a$10$1Hwmv2Tnl4O5EUmbbMW5HOoucHKK/mPUn1a.5rNnanrJzNt2m7/gO', 'admin')
 ;

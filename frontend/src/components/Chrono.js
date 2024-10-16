@@ -93,9 +93,8 @@ function Chrono() {
     );
     const segundos = Math.floor((tiempoEnMilisegundos % (1000 * 60)) / 1000);
     const milisegundos = Math.floor((tiempoEnMilisegundos % 1000) / 10);
-    return `${horas}:${minutos < 10 ? "0" : ""}${minutos}:${
-      segundos < 10 ? "0" : ""
-    }${segundos}.${milisegundos < 10 ? "0" : ""}${milisegundos}`;
+    return `${horas}:${minutos < 10 ? "0" : ""}${minutos}:${segundos < 10 ? "0" : ""
+      }${segundos}.${milisegundos < 10 ? "0" : ""}${milisegundos}`;
   };
 
   // Iniciar cronómetro
@@ -198,14 +197,13 @@ function Chrono() {
 
   return (
     <div className="p-8 pb-20 bg-gradient-to-r from-purple-600 via-blue-500 to-indigo-600 text-white min-h-screen">
-      <h2 className="text-3xl font-bold mb-8 text-center">
+      <h2 className="text-2xl font-bold mb-8 text-center">
         Registro de Tiempos
       </h2>
       {error && (
         <div
-          className={`${
-            isFading ? "fade-out" : "slide-in"
-          } bg-red-500 text-white p-4 rounded-md mb-4`}
+          className={`${isFading ? "fade-out" : "slide-in"
+            } bg-red-500 text-white p-4 rounded-md mb-4`}
         >
           {error}
         </div>

@@ -16,7 +16,7 @@ const app = express();
 // Habilitar CORS
 app.use(
   cors({
-    origin: "https://gincana.dungeonindustria.ddns.net",
+    origin: "https://chrono.mypets.ws",
     methods: "GET,POST,PUT,DELETE",
     crerdentials: true,
   })

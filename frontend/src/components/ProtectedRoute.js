@@ -4,7 +4,7 @@ const ProtectedRoute = ({ children }) => {
   const token = localStorage.getItem("token"); // Obtenemos el token del localStorage
 
   // Si no hay token, redirige al login
-  return token ? children : <Navigate to="/login" />;
+  return token ? children : <Navigate to="/dashboard/login" />;
 };
 
 export default ProtectedRoute;

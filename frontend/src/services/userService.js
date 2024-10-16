@@ -9,7 +9,7 @@ const addUser = async (userData) => {
       Authorization: `Bearer ${token}`,
     },
   });
-  return response.data;
+  return { status: response.status, data: response.data };
 };
 
 const editUser = async (userData) => {
@@ -26,9 +26,21 @@ const editUser = async (userData) => {
   return response.data;
 };
 
+// Eliminar usuario
+const deleteUser = async (userId) => {
+  const token = localStorage.getItem("token");
+  const response = await axios.delete(`${API_URL}/users/delete/${userId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
+}
+
 const userService = {
   addUser,
   editUser,
+  deleteUser,
 };
 
 export default userService;

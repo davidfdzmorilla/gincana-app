@@ -8,4 +8,4 @@ const generarHash = async (password) => {
 };
 
 // Hashear una contraseña de prueba
-generarHash('admin123456');
+generarHash('Beismita9683');

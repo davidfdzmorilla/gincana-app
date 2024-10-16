@@ -35,8 +35,6 @@ const editarPerfil = async (req, res) => {
     foto_perfil = `/uploads/${req.file.filename}`;
   }
 
-  console.log("Datos del perfil:", { nombre, email, telefono, foto_perfil });
-
   try {
     if (!nombre || !email) {
       return res

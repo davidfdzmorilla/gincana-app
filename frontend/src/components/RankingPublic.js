@@ -2,16 +2,16 @@ import { useState, useEffect, useContext } from "react";
 import runnerService from "../services/runnerService";
 import io from "socket.io-client";
 import { motion, AnimatePresence } from "framer-motion";
-import { UserContext } from "../context/UserContext";
 import Spinner from "./Spinner";
 import { RiMedal2Fill } from "react-icons/ri";
+import FlagEffect from "./FlagEffect";
 
 let socket;
 
-const Ranking = () => {
+const RankingPublic = () => {
   const REACT_APP_API_URL = process.env.REACT_APP_API_URL;
-  const { user } = useContext(UserContext);
   const [ranking, setRanking] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!socket) {
@@ -22,6 +22,7 @@ const Ranking = () => {
       try {
         const data = await runnerService.getRankingMejorVuelta();
         setRanking(data.corredores);
+        setLoading(false);
       } catch (error) {
         console.error("Error al obtener el ranking:", error);
       }
@@ -44,10 +45,6 @@ const Ranking = () => {
     };
   }, []);
 
-  if (!user) {
-    return <Spinner />;
-  }
-
   // Función para formatear el tiempo
   const formatearTiempo = (tiempoEnSegundos) => {
     const tiempoEnMilisegundos = tiempoEnSegundos * 1000;
@@ -63,11 +60,22 @@ const Ranking = () => {
 
   // Comparar el nuevo ranking con el anterior para asegurarse de que haya animación
   const getUniqueKey = (corredor) =>
-    `${corredor.runner_id}-${corredor.mejor_tiempo}-${corredor.mejor_tiempo}`;
+    `${corredor.runner_id}-${corredor.tiempo_total}-${corredor.total_vueltas}`;
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center p-8 pb-20 bg-gradient-to-r from-purple-600 via-blue-500 to-indigo-600 text-white min-h-screen">
+        <FlagEffect />
+        <h3 className="text-2xl font-bold mt-36">Ranking de Corredores</h3>
+        <Spinner />
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col items-center p-8 pb-20 bg-gradient-to-r from-purple-600 via-blue-500 to-indigo-600 text-white min-h-screen">
-      <h1 className="text-2xl font-bold mb-6">Ranking de Corredores</h1>
+      <FlagEffect />
+      <h3 className="text-2xl font-bold mt-36 mb-6">Ranking de Corredores</h3>
       <ul className="ranking-list space-y-4 pb-4 w-full flex flex-col items-center">
         {ranking.length === 0 && <p>No hay tiempos registrados.</p>}
         <AnimatePresence>
@@ -109,7 +117,7 @@ const Ranking = () => {
                 </p> */}
               </div>
               <div className="text-right">
-                {/* <p className="text-xl font-bold">Vuelta {corredor.total_vueltas}</p> */}
+                <p className="text-xl font-bold">Vuelta {corredor.total_vueltas}</p>
                 <p className="text-xl font-black">
                   {formatearTiempo(corredor.mejor_tiempo)}
                 </p>
@@ -122,4 +130,4 @@ const Ranking = () => {
   );
 };
 
-export default Ranking;
+export default RankingPublic;

@@ -5,7 +5,7 @@ const initSocket = (server) => {
   const socketIo = require("socket.io");
   io = socketIo(server, {
     cors: {
-      origin: "https://gincana.dungeonindustria.ddns.net",
+      origin: "https://chrono.mypets.ws",
       methods: ["GET", "POST", "PUT", "DELETE"],
       // credentials: true
     },
