@@ -1,4 +1,5 @@
 import { useState, useEffect, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import runnerService from "../services/runnerService";
 import io from "socket.io-client";
 import { motion, AnimatePresence } from "framer-motion";
@@ -10,7 +11,8 @@ let socket;
 
 const Ranking = () => {
   const REACT_APP_API_URL = process.env.REACT_APP_API_URL;
-  const { user } = useContext(UserContext);
+  const { user, setUser } = useContext(UserContext);
+  const navigate = useNavigate();
   const [ranking, setRanking] = useState([]);
 
   useEffect(() => {
@@ -21,6 +23,12 @@ const Ranking = () => {
     const fetchRanking = async () => {
       try {
         const data = await runnerService.getRankingMejorVuelta();
+        if (data.message === "Token no válido.") {
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
+          setUser(null);
+          navigate("/dashboard/login");
+        }
         setRanking(data.corredores);
       } catch (error) {
         console.error("Error al obtener el ranking:", error);
@@ -66,7 +74,7 @@ const Ranking = () => {
     `${corredor.runner_id}-${corredor.mejor_tiempo}-${corredor.mejor_tiempo}`;
 
   return (
-    <div className="flex flex-col items-center p-8 pb-20 bg-gradient-to-r from-purple-600 via-blue-500 to-indigo-600 text-white min-h-screen">
+    <div className="flex flex-col items-center py-8 px-2 pb-20 bg-gradient-to-r from-purple-600 via-blue-500 to-indigo-600 text-white min-h-screen">
       <h1 className="text-2xl font-bold mb-6">Ranking de Corredores</h1>
       <ul className="ranking-list space-y-4 pb-4 w-full flex flex-col items-center">
         {ranking.length === 0 && <p>No hay tiempos registrados.</p>}
@@ -83,13 +91,13 @@ const Ranking = () => {
             >
               <div className="relative">
                 {index === 0 && (
-                  <RiMedal2Fill className="medalla text-yellow-400 text-4xl" />
+                  <RiMedal2Fill className="medalla text-yellow-400 text-6xl" />
                 )}
                 {index === 1 && (
-                  <RiMedal2Fill className="medalla text-gray-400 text-4xl" />
+                  <RiMedal2Fill className="medalla text-gray-400 text-6xl" />
                 )}
                 {index === 2 && (
-                  <RiMedal2Fill className="medalla text-orange-400 text-4xl" />
+                  <RiMedal2Fill className="medalla text-orange-400 text-6xl" />
                 )}
                 {index > 2 && (
                   <span className="puesto font-bold text-3xl">{index + 1}</span>

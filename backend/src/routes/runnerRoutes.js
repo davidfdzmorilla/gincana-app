@@ -11,9 +11,9 @@ router.get('/', verificarAdmin, obtenerCorredores);
 router.get('/best', verificarToken, obtenerMejorCorredor);
 
 // Ruta para obtener el ranking de corredores con vueltas registradas
-router.get('/ranking', obtenerRankingCorredores);
+router.get('/ranking', verificarToken, obtenerRankingCorredores);
 
 // Ruta para obtener el ranking de corredores con mejor tiempo por vuelat
-router.get('/ranking-vuelta', obtenerRankingMejorTiempo);
+router.get('/ranking-vuelta', verificarAdmin, obtenerRankingMejorTiempo);
 
 module.exports = router;

@@ -82,6 +82,7 @@ const generarPasswordAleatoria = (length = 8) => {
 
 // Controlador para añadir un usuario
 const agregarUsuario = async (req, res) => {
+  console.log("req.body", req.body);
   const { nombre, email, telefono, password, rol, edad, equipo } =
     req.body;
   const nombre_equipo = equipo;

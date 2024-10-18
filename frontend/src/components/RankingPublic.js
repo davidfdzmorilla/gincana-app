@@ -20,7 +20,8 @@ const RankingPublic = () => {
 
     const fetchRanking = async () => {
       try {
-        const data = await runnerService.getRankingMejorVuelta();
+        const data = await runnerService.getRankingMejorVueltaPublic();
+        console.log(data);
         setRanking(data.corredores);
         setLoading(false);
       } catch (error) {
@@ -64,7 +65,7 @@ const RankingPublic = () => {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center p-8 pb-20 bg-gradient-to-r from-purple-600 via-blue-500 to-indigo-600 text-white min-h-screen">
+      <div className="flex flex-col items-center p-8 px-2 pb-20 bg-gradient-to-r from-purple-600 via-blue-500 to-indigo-600 text-white min-h-screen">
         <FlagEffect />
         <h3 className="text-2xl font-bold mt-36">Ranking de Corredores</h3>
         <Spinner />
@@ -91,16 +92,16 @@ const RankingPublic = () => {
             >
               <div className="relative">
                 {index === 0 && (
-                  <RiMedal2Fill className="medalla text-yellow-400 text-4xl" />
+                  <RiMedal2Fill className="medalla text-yellow-400 text-6xl" />
                 )}
                 {index === 1 && (
-                  <RiMedal2Fill className="medalla text-gray-400 text-4xl" />
+                  <RiMedal2Fill className="medalla text-gray-400 text-6xl" />
                 )}
                 {index === 2 && (
-                  <RiMedal2Fill className="medalla text-orange-400 text-4xl" />
+                  <RiMedal2Fill className="medalla text-orange-400 text-6xl" />
                 )}
                 {index > 2 && (
-                  <span className="puesto font-bold text-3xl">{index + 1}</span>
+                  <span className="puesto font-bold text-6xl">{index + 1}</span>
                 )}
               </div>
               <img

@@ -38,6 +38,7 @@ const verificarAdmin = (req, res, next) => {
 const verificarToken = (req, res, next) => {
   const authHeader = req.header("Authorization");
 
+
   if (!authHeader) {
     return res
       .status(401)
