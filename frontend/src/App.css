@@ -39,13 +39,13 @@
 .medalla,
 .puesto {
   position: absolute;
-  right: -25px;
-  bottom: -5px;
+  right: -40px;
+  bottom: 60px;
 }
 
 .puesto {
-  right: -12px;
-  bottom: 0;
+  right: -25px;
+  /* bottom: 15px; */
   background-color: #f1c40f;
   color: #fff;
   padding: 0 5px;
