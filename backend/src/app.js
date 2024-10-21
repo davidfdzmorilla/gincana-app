@@ -13,6 +13,9 @@ const teamRoutes = require("./routes/teamRoutes");
 // Crear la app de Express
 const app = express();
 
+// Configurar Express para que confíe en proxies
+app.set("trust proxy", 1);
+
 // Habilitar CORS
 app.use(
   cors({

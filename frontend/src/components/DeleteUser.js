@@ -44,11 +44,18 @@ const DeleteUser = () => {
   }
 
   const handleViewVueltas = async (id) => {
-    const runnerId = id;
+    // Si las vueltas ya están visibles y es el mismo corredor, las ocultamos
+    if (viewVuelta && vueltas.length > 0 && vueltas[0].runner_id === id) {
+      setViewVuelta(false);
+      setVueltas([]);
+      return;
+    }
+
+    // De lo contrario, cargamos las vueltas
     setViewVuelta(false);
     setVueltas([]);
     try {
-      const data = await runnerService.getVueltas(runnerId);
+      const data = await runnerService.getVueltas(id);
       if (data && data.vueltas) {
         setVueltas(data.vueltas);
         setViewVuelta(true);
@@ -58,16 +65,16 @@ const DeleteUser = () => {
     } catch (err) {
       console.error("Error al cargar vueltas:", err);
     }
-  }
+  };
 
-  const handleDeleteLap = async (lap) => {
-    const lapNumber = lap;
+  const handleDeleteLap = async (id) => {
+    const idTiempo = id;
     try {
       if (!window.confirm("¿Estás seguro de que quieres eliminar esta vuelta?")) {
         return;
       }
-      await runnerService.deleteVuelta(lapNumber);
-      setVueltas(vueltas.filter((vuelta) => vuelta.vuelta !== lapNumber));
+      await runnerService.deleteVuelta(idTiempo);
+      setVueltas(vueltas.filter((vuelta) => vuelta.id !== idTiempo));
     }
     catch (err) {
       console.error("Error al eliminar vuelta:", err);
@@ -82,7 +89,7 @@ const DeleteUser = () => {
   }
 
   return (
-    <div className="flex flex-col items-center gap-2 p-8 pb-20 bg-gradient-to-r from-purple-600 via-blue-500 to-indigo-600 text-white min-h-screen">
+    <div className="flex flex-col items-center gap-2 py-8 px-1 pb-20 bg-gradient-to-r from-purple-600 via-blue-500 to-indigo-600 text-white min-h-screen">
       <h2 className="text-2xl font-bold mb-6">Eliminar corredor</h2>
       {corredores.map((corredor) => (
         <div className="w-full max-w-md flex flex-col justify-between items-center gap-2 bg-green-500 p-2 rounded-md" key={corredor.user_id}>
@@ -92,21 +99,21 @@ const DeleteUser = () => {
               alt=""
               className="w-12 h-12 rounded-full"
             />
-            <h3 className="text-xl font-bold text-left grow">
+            <h3 className="text-lg w-1/3 font-bold text-left grow">
               {corredor.nombre.toLowerCase().split(' ').map((s) => s.charAt(0).toUpperCase() + s.substring(1)).join(' ')}
             </h3>
-            <div className="flex flex-col items-center gap-2">
+            <div className="w-2/12 flex flex-col items-center gap-2">
               <button
                 onClick={() => handleDelete(corredor.user_id)}
                 value={corredor.user_id}
-                className="bg-red-500 text-white rounded-md px-4 py-2"
+                className="bg-red-500 text-white rounded-md px-2 py-1"
               >
                 Eliminar
               </button>
               <button
                 onClick={() => handleViewVueltas(corredor.runner_id)}
                 value={corredor.runner_id}
-                className="bg-red-500 text-white rounded-md px-4 py-2"
+                className="bg-red-500 text-white rounded-md px-2 py-1"
               >
                 Vueltas
               </button>
@@ -120,7 +127,7 @@ const DeleteUser = () => {
                   <p>{vuelta.tiempo}</p>
                   <button
                     className="bg-red-500 text-white rounded-md p-2"
-                    onClick={() => handleDeleteLap(vuelta.vuelta)}
+                    onClick={() => handleDeleteLap(vuelta.id)}
                   >
                     Eliminar
                   </button>

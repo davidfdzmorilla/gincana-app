@@ -30,21 +30,21 @@ const obtenerVueltas = async (req, res) => {
 // Eliminar una vuelta específica
 const eliminarVuelta = async (req, res) => {
   try {
-    const { lap } = req.params;
+    const { id } = req.params;
     const adminUserId = req.user.id;
-    console.log('Eliminando vuelta:', lap);
+    console.log('Eliminando vuelta:', id);
 
     // Realizar la consulta para eliminar la vuelta
-    const [result] = await db.query('DELETE FROM times WHERE vuelta = ?', [lap]);
+    const [result] = await db.query('DELETE FROM times WHERE id = ?', [id]);
 
     // Si no se encontró la vuelta, devolver error
     if (result.affectedRows === 0) {
-      console.error('Vuelta no encontrada:', lap);
+      console.error('Vuelta no encontrada:', id);
       return res.status(404).json({ message: 'Vuelta no encontrada.' });
     }
 
     // Registrar evento de auditoría
-    registrarAuditoria(adminUserId, 'DELETE', 'times', lap);
+    registrarAuditoria(adminUserId, 'DELETE', 'times', id);
 
     res.status(200).json({ message: 'Vuelta eliminada correctamente.' });
   } catch (err) {

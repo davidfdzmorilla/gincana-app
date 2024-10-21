@@ -14,11 +14,32 @@ const Login = () => {
 
   // Comprobar si el usuario ya está autenticado
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      // Redirigir al usuario a la página de ranking si ya está autenticado
-      navigate("/dashboard/ranking");
-    }
+    const checkTokenValidity = async () => {
+      const token = localStorage.getItem("token");
+
+      if (token) {
+        try {
+          // Verifica si el token sigue siendo válido
+          const response = await authService.validateToken(token); // Cambia a una función que verifique el token en el backend
+
+          if (response.isValid) {
+            // Redirigir al usuario a la página de ranking si el token es válido
+            navigate("/dashboard/ranking");
+          } else {
+            // Si el token no es válido, borrarlo
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
+          }
+        } catch (err) {
+          console.error("Error al verificar el token:", err);
+          // Si ocurre un error (token inválido o caducado), borra el token
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
+        }
+      }
+    };
+
+    checkTokenValidity();
   }, [navigate]);
 
   // Función para validar el formato de email
@@ -83,8 +104,7 @@ const Login = () => {
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
       {error && (
         <div
-          className={`${isFading ? "fade-out" : "slide-in"
-            } bg-red-500 text-white p-4 rounded-md mb-4`}
+          className={`${isFading ? "fade-out" : "slide-in"} bg-red-500 text-white p-4 rounded-md mb-4`}
         >
           {error}
         </div>

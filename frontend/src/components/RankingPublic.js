@@ -20,7 +20,8 @@ const RankingPublic = () => {
 
     const fetchRanking = async () => {
       try {
-        const data = await runnerService.getRankingMejorVuelta();
+        const data = await runnerService.getRankingMejorVueltaPublic();
+        console.log(data);
         setRanking(data.corredores);
         setLoading(false);
       } catch (error) {
@@ -64,7 +65,7 @@ const RankingPublic = () => {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center p-8 pb-20 bg-gradient-to-r from-purple-600 via-blue-500 to-indigo-600 text-white min-h-screen">
+      <div className="flex flex-col items-center p-8 px-2 pb-20 bg-gradient-to-r from-purple-600 via-blue-500 to-indigo-600 text-white min-h-screen">
         <FlagEffect />
         <h3 className="text-2xl font-bold mt-36">Ranking de Corredores</h3>
         <Spinner />
@@ -73,10 +74,10 @@ const RankingPublic = () => {
   }
 
   return (
-    <div className="flex flex-col items-center p-8 pb-20 bg-gradient-to-r from-purple-600 via-blue-500 to-indigo-600 text-white min-h-screen">
+    <div className="flex flex-col items-center p-8 px-2 pb-20 bg-gradient-to-r from-purple-600 via-blue-500 to-indigo-600 text-white min-h-screen">
       <FlagEffect />
-      <h3 className="text-2xl font-bold mt-36 mb-6">Ranking de Corredores</h3>
-      <ul className="ranking-list space-y-4 pb-4 w-full flex flex-col items-center">
+      {/* <h3 className="text-2xl font-bold mt-36 mb-6">Ranking de Corredores</h3> */}
+      <ul className="ranking-list space-y-4 pb-4 w-full flex flex-col items-center mt-36 mb-6">
         {ranking.length === 0 && <p>No hay tiempos registrados.</p>}
         <AnimatePresence>
           {ranking.map((corredor, index) => (
@@ -87,20 +88,20 @@ const RankingPublic = () => {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.5 }}
-              className={`ranking-item w-full flex items-center justify-between ${index === 0 || index <= 2 ? 'bg-green-600 text-white' : 'bg-white text-gray-800'} p-4 rounded-lg shadow-md transform transition duration-300 hover:scale-105 hover:shadow-lg`}
+              className={`ranking-item w-full h-24 flex items-between justify-start  py-2 ${index === 0 || index <= 2 ? 'bg-green-600 text-white' : 'bg-white text-gray-800'} p-4 rounded-lg shadow-md transform transition duration-300 hover:scale-105 hover:shadow-lg`}
             >
               <div className="relative">
                 {index === 0 && (
-                  <RiMedal2Fill className="medalla text-yellow-400 text-4xl" />
+                  <RiMedal2Fill className="medalla text-yellow-400 text-6xl" />
                 )}
                 {index === 1 && (
-                  <RiMedal2Fill className="medalla text-gray-400 text-4xl" />
+                  <RiMedal2Fill className="medalla text-gray-400 text-6xl" />
                 )}
                 {index === 2 && (
-                  <RiMedal2Fill className="medalla text-orange-400 text-4xl" />
+                  <RiMedal2Fill className="medalla text-orange-400 text-6xl" />
                 )}
                 {index > 2 && (
-                  <span className="puesto font-bold text-3xl">{index + 1}</span>
+                  <span className="puesto font-bold text-4xl">{index + 1}</span>
                 )}
               </div>
               <img
@@ -108,19 +109,21 @@ const RankingPublic = () => {
                 alt=""
                 className="w-12 h-12 rounded-full"
               />
-              <div className="flex-1 ml-4">
-                <p className="text-2xl font-extrabold">
-                  {corredor.nombre.toLowerCase().split(' ').map((s) => s.charAt(0).toUpperCase() + s.substring(1)).join(' ')}
-                </p>
-                {/* <p className="text-sm text-gray-500">
+              <div className="w-full flex flex-col items-start justify-start">
+                <div className="flex-1 ml-4">
+                  <p className="text-xl font-extrabold">
+                    {corredor.nombre.toLowerCase().split(' ').map((s) => s.charAt(0).toUpperCase() + s.substring(1)).join(' ')}
+                  </p>
+                  {/* <p className="text-sm text-gray-500">
                   {corredor.equipo_nombre}
                 </p> */}
-              </div>
-              <div className="text-right">
-                <p className="text-xl font-bold">Vuelta {corredor.total_vueltas}</p>
-                <p className="text-xl font-black">
-                  {formatearTiempo(corredor.mejor_tiempo)}
-                </p>
+                </div>
+                <div className="text-right w-full">
+                  <p className="text-xl font-bold">{corredor.total_vueltas}</p>
+                  <p className="w-full text-end text-xl font-black">
+                    {formatearTiempo(corredor.mejor_tiempo)}
+                  </p>
+                </div>
               </div>
             </motion.li>
           ))}
